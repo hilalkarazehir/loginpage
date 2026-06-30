@@ -1,8 +1,14 @@
+import { useEffect } from "react"
 import { useNavigate } from "react-router-dom"
-
 function Dashboard() {
   const navigate = useNavigate()
+  useEffect(() => {
+    const isLoggedIn = localStorage.getItem("isLoggedIn")
 
+    if (isLoggedIn !== "true") {
+      navigate("/")
+    }
+  }, [navigate])
   const handleLogout = () => {
     localStorage.removeItem("isLoggedIn")
     navigate("/")
@@ -19,7 +25,7 @@ function Dashboard() {
         <h1>Hoşgeldiniz</h1>
         <p style={{ color: "rgba(196,132,252,0.7)" }}>Smart Spirit Dashboard</p>
         <button onClick={handleLogout} style={{
-          marginTop: 20, padding: "12px 24px", border: "none", borderRadius: 12,
+          marginTop: 30, padding: "12px 24px", border: "none", borderRadius: 12,
           background: "linear-gradient(135deg, #7c3aed, #ec4899)",
           color: "#fff", cursor: "pointer", fontSize: 13, fontWeight: 700
         }}>
