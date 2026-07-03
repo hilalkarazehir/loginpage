@@ -1,5 +1,6 @@
 
 /frontend/node_modules
+/frontend/dist
 /frontend/build
 
 npm-debug.log*
@@ -11,6 +12,14 @@ yarn-error.log*
 *.class
 *.log
 
+.env
+.env.local
+*.env
+
 .idea/
 *.iml
+*.iws
 out/
+
+.DS_Store
+Thumbs.db

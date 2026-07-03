@@ -1,7 +1,13 @@
 package com.smartspirit.dto;
 
+import jakarta.validation.constraints.NotBlank;
+
 public class LoginRequest {
+
+    @NotBlank(message = "Kullanıcı adı boş olamaz")
     private String username;
+
+    @NotBlank(message = "Şifre boş olamaz")
     private String password;
 
     public String getUsername() {
