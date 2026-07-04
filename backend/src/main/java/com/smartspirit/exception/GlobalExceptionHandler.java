@@ -28,7 +28,6 @@ public class GlobalExceptionHandler {
         this.systemErrorRepository = systemErrorRepository;
     }
 
-    // @Valid ile işaretlenmiş bir @RequestBody doğrulamayı geçemediğinde (örn. boş kullanıcı adı)
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleValidationErrors(MethodArgumentNotValidException ex,
                                                                    HttpServletRequest request) {
@@ -46,7 +45,6 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(error);
     }
 
-    // @RequestHeader("Authorization") zorunlu ama gönderilmemişse (örn. Postman'de header unutulmuşsa)
     @ExceptionHandler(MissingRequestHeaderException.class)
     public ResponseEntity<ErrorResponse> handleMissingHeader(MissingRequestHeaderException ex,
                                                                 HttpServletRequest request) {
@@ -59,7 +57,6 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(error);
     }
 
-    // Authorization header var ama içindeki token geçersiz/süresi dolmuş
     @ExceptionHandler(InvalidTokenException.class)
     public ResponseEntity<ErrorResponse> handleInvalidToken(InvalidTokenException ex,
                                                                HttpServletRequest request) {
@@ -72,8 +69,6 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
     }
 
-    // Beklenmeyen her şey: veritabanı hatası, null pointer, vs.
-    // Kullanıcıya asla stack trace veya iç detay gösterilmez; hem konsola hem DB'ye (error_logs) yazılır.
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleUnexpectedError(Exception ex, HttpServletRequest request) {
         logger.error("Beklenmeyen hata - path: {}", request.getRequestURI(), ex);

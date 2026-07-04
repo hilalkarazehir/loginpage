@@ -90,7 +90,7 @@ PostgreSQL'de aşağıdaki komutu çalıştırın:
 CREATE DATABASE smartspirit;
 ```
 
-Tablolar uygulama ilk çalıştığında Hibernate tarafından otomatik oluşturulur (`spring.jpa.hibernate.ddl-auto=update`) — elle şema oluşturmanıza gerek yoktur.
+Tablolar uygulama ilk çalıştığında Hibernate tarafından otomatik oluşturulur (`spring.jpa.hibernate.ddl-auto=update`) 
 
 ### 3. Ortam değişkenlerini ayarlayın
 
@@ -104,19 +104,19 @@ Uygulama iki hassas değeri kod içine yazmak yerine ortam değişkeninden okur:
 **Windows (PowerShell)**
 ```powershell
 $env:DB_PASSWORD="postgres_sifreniz"
-$env:JWT_SECRET="k8pQ2xM9vL4nR7tY1wZ5cB3dF6gH0jK2mN4qS8vX1zA3bE7dG9hJ2lP5rT8wY0u"
+$env:JWT_SECRET="jwt_secret_key"
 ```
 
 **Windows (Komut İstemi)**
 ```cmd
 set DB_PASSWORD=postgres_sifreniz
-set JWT_SECRET=k8pQ2xM9vL4nR7tY1wZ5cB3dF6gH0jK2mN4qS8vX1zA3bE7dG9hJ2lP5rT8wY0u
+set JWT_SECRET=jwt_secret_key
 ```
 
 **Linux / macOS**
 ```bash
 export DB_PASSWORD=postgres_sifreniz
-export JWT_SECRET=k8pQ2xM9vL4nR7tY1wZ5cB3dF6gH0jK2mN4qS8vX1zA3bE7dG9hJ2lP5rT8wY0u
+export JWT_SECRET=jwt_secret_key
 ```
 
 > `JWT_SECRET` için yukarıdaki örnek değeri aynen kullanabilirsiniz veya kendi rastgele metninizi üretebilirsiniz — önemli olan en az 32 karakter uzunluğunda olması (HS256 imzalama algoritmasının gereksinimi).
@@ -134,13 +134,9 @@ cd backend
 mvnw.cmd spring-boot:run
 ```
 
-Backend `http://localhost:8080` adresinde ayağa kalkar. İlk çalıştırmada konsolda şu satırı görmelisiniz:
+Backend `http://localhost:8080` adresinde ayağa kalkar. 
 
 ```
->>> Varsayılan admin kullanıcısı oluşturuldu (admin / 1234)
-```
-
-Bu, `AdminSeeder` sınıfının otomatik olarak eklediği test kullanıcısıdır (bkz. *Test Kullanıcısı* bölümü). Admin zaten varsa bu satır görünmez, seeder sessizce hiçbir şey yapmaz.
 
 ### 5. Frontend'i çalıştırın
 
@@ -158,7 +154,7 @@ Frontend `http://localhost:5173` adresinde çalışır.
 |---------------|-------|-------|
 | `admin`       | `1234`| ADMIN |
 
-Bu kullanıcı veritabanında **BCrypt ile hashlenmiş** olarak saklanır; şifre hiçbir zaman düz metin olarak tutulmaz. Burada README'de açıkça paylaşılıyor olması bir güvenlik açığı değildir — bu, projeyi değerlendirecek kişiler için bilinçli olarak oluşturulmuş bir demo/test hesabıdır. Gerçek bir üretim ortamında hiçbir kullanıcının şifresi bu şekilde belgelenmez; buradaki amaç yalnızca projeyi klonlayan kişinin ekstra bir kurulum adımına (elle SQL yazmasına) gerek kalmadan sistemi test edebilmesidir.
+Bu kullanıcı veritabanında **BCrypt ile hashlenmiş** olarak saklanır.
 
 ## Mevcut Özellikler
 
@@ -189,5 +185,5 @@ Bu kullanıcı veritabanında **BCrypt ile hashlenmiş** olarak saklanır; şifr
 
 - Backend'de `spring-boot-starter-security` yerine sadece `spring-security-crypto` bağımlılığı kullanıldı; amaç yalnızca BCrypt encoder'a erişmekti, tam Spring Security filter zincirini (ve beraberinde gelen CORS yapılandırma karmaşasını) şimdilik devreye almamaktı.
 - Frontend başlangıçta Create React App ile başlatılıp sonradan daha güncel olan Vite'a taşındı.
-- `jwt.secret` ve `spring.datasource.password` kaynak koda gömülmek yerine ortam değişkeninden okunur; bu sayede hassas değerler git geçmişine karışmaz.
-- `AdminSeeder`, `CommandLineRunner` arayüzünü uygulayarak Spring context tamamen ayağa kalktıktan sonra çalışır; admin kullanıcısı zaten varsa hiçbir işlem yapmaz, bu yüzden uygulamayı defalarca yeniden başlatmak güvenlidir (yinelenen kayıt oluşturmaz).
+- `jwt.secret` ve `spring.datasource.password` kaynak koda gömülmek yerine ortam değişkeninden okunur.
+- `AdminSeeder`, Spring context tamamen ayağa kalktıktan sonra çalışır; admin kullanıcısı zaten varsa hiçbir işlem yapmaz, bu yüzden uygulamayı defalarca yeniden başlatmak güvenlidir (yinelenen kayıt oluşturmaz).

@@ -1,7 +1,6 @@
 package com.smartspirit.controller;
 
 import com.smartspirit.dto.LogEntryResponse;
-import com.smartspirit.entity.UserLog;
 import com.smartspirit.exception.InvalidTokenException;
 import com.smartspirit.repository.UserLogRepository;
 import com.smartspirit.util.JwtUtil;
