@@ -1,4 +1,4 @@
-package com.smartspirit.util.java;
+package com.smartspirit.util;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -34,6 +34,15 @@ public class JwtUtil {
         try {
             return Jwts.parserBuilder().setSigningKey(key).build()
                     .parseClaimsJws(token).getBody().getSubject();
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public String extractRole(String token) {
+        try {
+            return Jwts.parserBuilder().setSigningKey(key).build()
+                    .parseClaimsJws(token).getBody().get("role", String.class);
         } catch (Exception e) {
             return null;
         }

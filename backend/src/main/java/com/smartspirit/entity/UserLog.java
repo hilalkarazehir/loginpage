@@ -18,10 +18,18 @@ public class UserLog {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "username")
+    private String username;
 
     @Column(nullable = false)
     private String action;
 
     @Column(name = "created_date", nullable = false)
     private LocalDateTime createdDate;
+
+    public UserLog(String username, String action, LocalDateTime createdDate) {
+        this.username = username;
+        this.action = action;
+        this.createdDate = createdDate;
+    }
 }

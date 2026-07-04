@@ -30,6 +30,24 @@ export default function LoginPages() {
       setUsername(savedUsername)
     }
   }, [])
+useEffect(() => {
+  const token = localStorage.getItem("token")
+  if (!token) return
+
+  fetch("http://localhost:8080/api/auth/validate", {
+    headers: { Authorization: `Bearer ${token}` },
+  })
+    .then((res) => (res.ok ? res.json() : Promise.reject()))
+    .then((data) => {
+      if (data.valid) {
+        navigate("/dashboard")
+      }
+    })
+    .catch(() => {
+      localStorage.removeItem("isLoggedIn")
+      localStorage.removeItem("token")
+    })
+}, [navigate])
 
   const handleLogin = async (e) => {
     e.preventDefault()

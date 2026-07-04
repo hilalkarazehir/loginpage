@@ -3,10 +3,12 @@ package com.smartspirit.controller;
 import com.smartspirit.dto.LoginRequest;
 import com.smartspirit.dto.LoginResponse;
 import com.smartspirit.service.LoginService;
+import com.smartspirit.util.JwtUtil;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -14,9 +16,11 @@ import org.springframework.web.bind.annotation.*;
 public class LoginController {
 
     private final LoginService loginService;
+    private final JwtUtil jwtUtil;
 
-    public LoginController(LoginService loginService) {
+    public LoginController(LoginService loginService, JwtUtil jwtUtil) {
         this.loginService = loginService;
+        this.jwtUtil = jwtUtil;
     }
 
     @PostMapping("/login")
@@ -28,13 +32,19 @@ public class LoginController {
         return ResponseEntity.status(401).body(response);
     }
 
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<LoginResponse> handleValidationErrors(MethodArgumentNotValidException ex) {
-        String errorMessage = ex.getBindingResult()
-                .getFieldErrors()
-                .get(0)
-                .getDefaultMessage();
+    @GetMapping("/validate")
+    public ResponseEntity<Map<String, Object>> validate(@RequestHeader("Authorization") String authorizationHeader) {
+        if (!authorizationHeader.startsWith("Bearer ")) {
+            return ResponseEntity.status(401).body(Map.of("valid", false));
+        }
 
-        return ResponseEntity.badRequest().body(new LoginResponse(errorMessage, null, false, null));
+        String token = authorizationHeader.substring(7);
+        String username = jwtUtil.extractUsername(token);
+
+        if (username == null) {
+            return ResponseEntity.status(401).body(Map.of("valid", false));
+        }
+
+        return ResponseEntity.ok(Map.of("valid", true, "username", username));
     }
 }

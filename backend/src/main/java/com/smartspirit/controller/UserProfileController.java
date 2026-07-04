@@ -1,7 +1,8 @@
 package com.smartspirit.controller;
 
 import com.smartspirit.dto.UserProfileResponse;
-import com.smartspirit.util.java.JwtUtil;
+import com.smartspirit.exception.InvalidTokenException;
+import com.smartspirit.util.JwtUtil;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,15 +19,15 @@ public class UserProfileController {
 
     @GetMapping("/profile")
     public ResponseEntity<UserProfileResponse> getProfile(@RequestHeader("Authorization") String authorizationHeader) {
-        if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
-            return ResponseEntity.status(401).build();
+        if (!authorizationHeader.startsWith("Bearer ")) {
+            throw new InvalidTokenException("Yetkilendirme başlığı 'Bearer' ile başlamalı");
         }
 
         String token = authorizationHeader.substring(7);
         String username = jwtUtil.extractUsername(token);
 
         if (username == null) {
-            return ResponseEntity.status(401).build();
+            throw new InvalidTokenException("Token geçersiz veya süresi dolmuş");
         }
 
         UserProfileResponse response = new UserProfileResponse(username, "Hoş geldin, " + username);

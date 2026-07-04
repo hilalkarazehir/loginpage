@@ -23,4 +23,9 @@ public class SystemError {
 
     @Column(name = "created_date", nullable = false)
     private LocalDateTime createdDate;
+
+    public SystemError(String details, LocalDateTime createdDate) {
+        this.details = details;
+        this.createdDate = createdDate;
+    }
 }
