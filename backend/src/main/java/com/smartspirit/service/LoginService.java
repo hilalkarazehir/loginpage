@@ -32,7 +32,7 @@ public class LoginService {
             return new LoginResponse("Hesap aktif değil", null, false, null);
         }
 
-        String token = jwtUtil.generateToken(user.getUsername());
+        String token = jwtUtil.generateToken(user.getUsername(), user.getRole().getName());
         return new LoginResponse("Giriş başarılı", user.getUsername(), true, token);
     }
 }

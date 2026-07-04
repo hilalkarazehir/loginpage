@@ -88,8 +88,7 @@ export default function LoginPages() {
       className="min-h-screen flex items-center justify-center p-6"
       style={{ background: "#F5F7FA" }}
     >
-      <div className="relative flex w-full max-w-[860px] min-h-[540px] rounded-2xl overflow-hidden bg-white shadow-[0_24px_70px_-32px_rgba(30,58,95,0.45),0_1px_3px_rgba(15,23,42,0.08)] border border-[#E5EAF0]">
-        {/* SOL PANEL */}
+<div className="relative flex w-full max-w-[860px] min-h-[540px] rounded-2xl overflow-hidden bg-white shadow-[0_24px_70px_-32px_rgba(30,58,95,0.45),0_1px_3px_rgba(15,23,42,0.08)] border border-[#E5EAF0] transition-transform duration-300 ease-out hover:scale-[1.005]">        {/* SOL PANEL */}
         <div
           className="hidden md:flex w-[42%] p-11 flex-col justify-between relative overflow-hidden"
           style={{ background: "#1E3A5F" }}
@@ -106,13 +105,31 @@ export default function LoginPages() {
                 "radial-gradient(circle at 30% 25%, black 0%, transparent 72%)",
             }}
           />
-
-          <div
+<motion.div
+            className="absolute -inset-y-40 -inset-x-40 pointer-events-none blur-md"
+            style={{
+             background:
+                 "linear-gradient(45deg, transparent 32%, rgba(255,255,255,0.16) 44%, rgba(255,255,255,0.26) 50%, rgba(255,255,255,0.16) 56%, transparent 68%)",
+            }}
+            animate={{ x: ["-25%", "25%"], y: ["25%", "-25%"] }}
+            transition={{
+              duration: 9,
+              repeat: Infinity,
+              ease: "easeInOut",
+              repeatType: "mirror",
+            }}
+          />
+          <motion.div
             className="absolute -left-24 top-8 w-[360px] h-[360px] rounded-full opacity-25 blur-3xl"
             style={{
               background:
                 "radial-gradient(circle, rgba(147,197,253,0.55) 0%, rgba(255,255,255,0.12) 38%, transparent 68%)",
             }}
+            animate={{
+              scale: [1, 1.15, 1],
+              opacity: [0.25, 0.35, 0.25],
+            }}
+            transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
           />
 
           <div
@@ -133,16 +150,21 @@ export default function LoginPages() {
           />
 
           <div className="relative flex flex-col gap-9">
-            <div className="absolute -top-10 -left8 w-[360px] h-[600px] opacity-95 pointer-events-none">
-              <SmartSpiritLogo variant="watermark" className="w-full h-full" />
-            </div>
+            <div
+                          className="absolute -top-10 -left8 w-[360px] h-[600px] opacity-95 pointer-events-none"
+                          animate={{ y: [0, -8, 0] }}
+                          transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+                        >
+                          <SmartSpiritLogo variant="watermark" className="w-full h-full" />
+                        </div>
+                        <div className="absolute top-2 right-1 h-px w-60 bg-white/15" />
           </div>
 
           <div className="relative mt-auto flex flex-col gap-4">
 
 
             <div className="flex items-center gap-3">
-              <div className="h-px flex-1 bg-white/15" />
+              <div className="h-px w-70 bg-white/15" />
               <span className="font-sans text-[12px] text-blue-100/55 tracking-wide whitespace-nowrap">
                 Smart Spirit © 2026
               </span>
@@ -179,12 +201,12 @@ export default function LoginPages() {
                 </Label>
 
                 <div
-                  className={`flex items-center gap-2.5 h-12 rounded-xl border bg-[#F8FAFC] px-3.5 transition-all ${
-                    errors.username
-                      ? "border-destructive"
-                      : "border-[#DDE3EA] focus-within:border-[#1E3A5F] focus-within:ring-4 focus-within:ring-[#1E3A5F]/10"
-                  }`}
-                >
+                                  className={`flex items-center gap-2.5 h-12 rounded-xl border bg-[#F8FAFC] px-3.5 transition-all duration-200 ease-out ${
+                                    errors.username
+                                      ? "border-destructive"
+                                      : "border-[#DDE3EA] focus-within:border-[#1E3A5F] focus-within:ring-4 focus-within:ring-[#1E3A5F]/10 focus-within:shadow-md focus-within:scale-[1.015]"
+                                  }`}
+                                >
                   <FieldIcon>
                     <svg
                       viewBox="0 0 24 24"
@@ -243,12 +265,12 @@ export default function LoginPages() {
                 </Label>
 
                 <div
-                  className={`flex items-center gap-2.5 h-12 rounded-xl border bg-[#F8FAFC] px-3.5 transition-all ${
-                    errors.password
-                      ? "border-destructive"
-                      : "border-[#DDE3EA] focus-within:border-[#1E3A5F] focus-within:ring-4 focus-within:ring-[#1E3A5F]/10"
-                  }`}
-                >
+                                  className={`flex items-center gap-2.5 h-12 rounded-xl border bg-[#F8FAFC] px-3.5 transition-all duration-200 ease-out ${
+                                    errors.password
+                                      ? "border-destructive"
+                                      : "border-[#DDE3EA] focus-within:border-[#1E3A5F] focus-within:ring-4 focus-within:ring-[#1E3A5F]/10 focus-within:shadow-md focus-within:scale-[1.015]"
+                                  }`}
+                                >
                   <FieldIcon>
                     <svg
                       viewBox="0 0 24 24"

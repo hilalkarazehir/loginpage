@@ -44,34 +44,67 @@ frontend/
 ```
 
 ## Kurulum ve Çalıştırma
+- Gereksinimler
 
-### Ön koşullar
-- Java 17+
-- Node.js 18+
-- PostgreSQL (yerelde çalışıyor olmalı)
+Projeyi çalıştırmadan önce aşağıdaki yazılımların bilgisayarınıza kurulu olması gerekmektedir.
 
+- Yazılım	Sürüm	İndirme Bağlantısı
+- Java	17 veya üzeri	https://adoptium.net/
+- Node.js	18 veya üzeri	https://nodejs.org/
+- PostgreSQL	15 veya üzeri	https://www.postgresql.org/download/
+- Maven	İsteğe bağlı (Projede Maven Wrapper bulunduğu için ayrıca kurmanız gerekmez.)	https://maven.apache.org/download.cgi
+- Projeyi İndirme
+
+Git yüklüyse aşağıdaki komut ile projeyi bilgisayarınıza indirebilirsiniz.
+
+- git clone https://github.com/KULLANICI_ADIN/smart-spirit-login.git
+
+cd smart-spirit-login
+
+KULLANICI_ADIN kısmını GitHub kullanıcı adınız ile değiştirin.
+
+## Veritabanı Oluşturma
+
+PostgreSQL üzerinde aşağıdaki komutu çalıştırarak veritabanını oluşturun.
+
+CREATE DATABASE smartspirit;
+
+Uygulama ilk çalıştığında tablolar Hibernate tarafından otomatik olarak oluşturulacaktır (spring.jpa.hibernate.ddl-auto=update).
+
+## Windows (Komut İstemi)
+set DB_PASSWORD=postgres_sifreniz
+- Windows (PowerShell)
+$env:DB_PASSWORD="postgres_sifreniz"
+- Linux / macOS
+export DB_PASSWORD=postgres_sifreniz
+- 
+## Backend'i Çalıştırma
+```bash
+- cd backend
+- ./mvnw spring-boot:run
+
+Windows kullanıyorsanız:
+
+- cd backend
+- mvnw.cmd spring-boot:run
+
+Backend varsayılan olarak aşağıdaki adreste çalışacaktır:
+
+http://localhost:8080
+## Frontend'i Çalıştırma
+```bash
+- cd frontend
+- npm install
+- npm run dev
+
+Frontend varsayılan olarak aşağıdaki adreste çalışacaktır:
+
+http://localhost:5173
 ### Veritabanı
 ```sql
 CREATE DATABASE smartspirit;
 ```
 Uygulama `spring.jpa.hibernate.ddl-auto=update` ile tabloları otomatik oluşturur, ayrıca manuel şema yönetimine gerek yoktur.
-
-### Backend
-```bash
-cd backend
-# DB şifresini ortam değişkeni olarak ver
-export DB_PASSWORD=senin_postgres_sifren
-./mvnw spring-boot:run
-```
-Varsayılan port: `8080`
-
-### Frontend
-```bash
-cd frontend
-npm install
-npm run dev
-```
-Varsayılan port: `5173`
 
 ## Ortam Değişkenleri
 

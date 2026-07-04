@@ -77,17 +77,23 @@ export default function Dashboard() {
   })
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-[#1E3A5F] text-white">
+   <div
+     className="relative min-h-screen overflow-hidden text-white"
+     style={{
+       background:
+               "linear-gradient(160deg, #17324A 0%, #1E3A5F 45%, #2A4A6B 100%)",
+     }}
+   >
       <div
-        className="pointer-events-none fixed inset-0 opacity-[0.1]"
+        className="pointer-events-none fixed inset-0 opacity-[0.05]"
         style={{
           backgroundImage:
-            "linear-gradient(rgba(255,255,255,0.8) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.8) 1px, transparent 1px)",
+           "linear-gradient(rgba(255,255,255,0.4) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.4) 1px, transparent 1px)",
           backgroundSize: "34px 34px",
         }}
       />
       <div
-        className="pointer-events-none fixed -right-32 -top-40 w-[560px] h-[560px] rounded-full opacity-25 blur-3xl"
+              className="pointer-events-none fixed -left-32 bottom-0 w-[460px] h-[460px] rounded-full opacity-[0.12] blur-3xl"
         style={{
           background:
             "radial-gradient(circle, rgba(147,197,253,0.65) 0%, rgba(255,255,255,0.12) 40%, transparent 68%)",

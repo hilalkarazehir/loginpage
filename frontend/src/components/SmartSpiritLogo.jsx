@@ -1,14 +1,5 @@
 import { useState } from "react"
 
-/**
- * Marka imzası — tek bileşen, iki bağlam:
- *  - variant="badge"     → üstte kompakt rozet (ikon + isim), koyu panel içinde
- *  - variant="watermark" → arka planda dev, soluk tekil işaret
- *
- * İkisi de aynı /logo.png dosyasını, aynı fallback ikonunu paylaşır —
- * "tek, tutarlı bir imza" fikri buradan geliyor. Dosya yoksa (ör. henüz
- * yüklenmediyse) ikon+metin fallback'ine sessizce düşer.
- */
 export default function SmartSpiritLogo({ variant = "badge", className = "" }) {
   const [imgFailed, setImgFailed] = useState(false)
 
