@@ -47,13 +47,6 @@
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) * 1.4);
 }
-
-/*
-  "Meridyen" paleti — sıcak kağıt zemin + derin çam yeşili vurgu.
-  Kurumsal, zarif, sıcak. Koyu-mürekkep + altın klişesinden bilinçli kaçınıldı.
-  Light/dark toggle YOK, marka teması sabit.
-  Not: split-kart konsepti bu paleti aynen kullanıyor — değişiklik gerekmedi.
-*/
 :root {
 
   --background: #F6F3EC;

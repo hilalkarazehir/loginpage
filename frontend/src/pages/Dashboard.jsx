@@ -1,22 +1,8 @@
 import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { motion, AnimatePresence } from "motion/react"
-import {
-  LogOut,
-  FileText,
-  Shield,
-  Users,
-  ArrowRight,
-  Clock,
-  UserCircle2,
-  ChevronDown,
-  RefreshCw,
-  CheckCircle2,
-  XCircle,
-  UserX,
-  History,
-} from "lucide-react"
-import SmartSpiritLogo from "@/components/SmartSpiritLogo"
+import {LogOut,FileText,Shield,Users,ArrowRight, Clock,UserCircle2, ChevronDown, RefreshCw, CheckCircle2,XCircle,UserX, History,} from "lucide-react"
+
 
 const ACTION_META = {
   LOGIN_SUCCESS: {
@@ -178,7 +164,7 @@ export default function Dashboard() {
         }}
       />
       <div
-        className="pointer-events-none fixed -left-32 bottom-0 w-[460px] h-[460px] rounded-full opacity-[0.12] blur-3xl"
+       className="pointer-events-none fixed -right-32 -top-40 w-[560px] h-[560px] rounded-full opacity-25 blur-3xl"
         style={{
           background:
             "radial-gradient(circle, rgba(147,197,253,0.5) 0%, transparent 70%)",
@@ -188,11 +174,11 @@ export default function Dashboard() {
       {/* HEADER */}
       <header className="sticky top-0 z-20 border-b border-white/10 bg-[#1E3A5F]/85 backdrop-blur-xl">
         <div className="max-w-5xl mx-auto px-6 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-white/10 border border-white/15 flex items-center justify-center">
-              <SmartSpiritLogo variant="mark" className="w-6 h-6" />
+  <div className="flex items-center gap-3">
+              <span className="font-sans text-[15px] font-semibold tracking-[0.08em] text-white uppercase">
+                Smart Spirit AI
+              </span>
             </div>
-          </div>
 
           <div className="flex items-center gap-3">
             {status === "ready" && (
