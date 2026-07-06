@@ -43,8 +43,30 @@ public class LoginService {
 
         logAttempt(user.getUsername(), "LOGIN_SUCCESS");
         String token = jwtUtil.generateToken(user.getUsername(), user.getRole().getName());
-        return new LoginResponse("Giriş başarılı", user.getUsername(), true, token);
+        String refreshToken = jwtUtil.generateRefreshToken(user.getUsername());
+        return new LoginResponse("Giriş başarılı", user.getUsername(), true, token, refreshToken);
     }
+
+    public LoginResponse refreshToken(String refreshToken) {
+        if (!jwtUtil.isRefreshToken(refreshToken)) {
+            return new LoginResponse("Geçersiz veya süresi dolmuş refresh token", null, false, null);
+        }
+
+        String username = jwtUtil.extractUsername(refreshToken);
+        if (username == null) {
+            return new LoginResponse("Geçersiz veya süresi dolmuş refresh token", null, false, null);
+        }
+
+        User user = loginRepository.findByUsername(username).orElse(null);
+        if (user == null || !user.isActive()) {
+            return new LoginResponse("Kullanıcı bulunamadı veya aktif değil", null, false, null);
+        }
+
+        String newToken = jwtUtil.generateToken(user.getUsername(), user.getRole().getName());
+        String newRefreshToken = jwtUtil.generateRefreshToken(user.getUsername());
+        return new LoginResponse("Token yenilendi", user.getUsername(), true, newToken, newRefreshToken);
+    }
+
     private void logAttempt(String username, String action) {
         try {
             userLogRepository.save(new UserLog(username, action, LocalDateTime.now()));

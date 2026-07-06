@@ -41,6 +41,5 @@ public class DataSeeder implements CommandLineRunner {
         admin.setRole(adminRole);
 
         userRepository.save(admin);
-        System.out.println(">>> Varsayılan admin kullanıcısı oluşturuldu (admin / 1234)");
     }
 }

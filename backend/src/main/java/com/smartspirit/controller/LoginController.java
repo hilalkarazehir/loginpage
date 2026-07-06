@@ -2,6 +2,7 @@ package com.smartspirit.controller;
 
 import com.smartspirit.dto.LoginRequest;
 import com.smartspirit.dto.LoginResponse;
+import com.smartspirit.dto.RefreshTokenRequest;
 import com.smartspirit.service.LoginService;
 import com.smartspirit.util.JwtUtil;
 import jakarta.validation.Valid;
@@ -30,6 +31,15 @@ public class LoginController {
             return ResponseEntity.ok(response);
         }
         return ResponseEntity.status(401).body(response);
+    }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<LoginResponse> refresh(@Valid @RequestBody RefreshTokenRequest request) {
+        LoginResponse response = loginService.refreshToken(request.getRefreshToken());
+        if (!response.isSuccess()) {
+            return ResponseEntity.status(401).body(response);
+        }
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/validate")

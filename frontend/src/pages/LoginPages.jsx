@@ -111,32 +111,21 @@ useEffect(() => {
           className="hidden md:flex w-[42%] p-11 flex-col justify-between relative overflow-hidden"
           style={{ background: "#1E3A5F" }}
         >
-          <div
-            className="absolute inset-0 opacity-[0.1]"
-            style={{
-              backgroundImage:
-                "linear-gradient(rgba(255,255,255,0.7) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.7) 1px, transparent 1px)",
-              backgroundSize: "28px 28px",
-              WebkitMaskImage:
-                "radial-gradient(circle at 30% 25%, black 0%, transparent 72%)",
-              maskImage:
-                "radial-gradient(circle at 30% 25%, black 0%, transparent 72%)",
-            }}
-          />
+
 <motion.div
-            className="absolute -inset-y-40 -inset-x-40 pointer-events-none blur-md"
-            style={{
-             background:
-                 "linear-gradient(45deg, transparent 32%, rgba(255,255,255,0.16) 44%, rgba(255,255,255,0.26) 50%, rgba(255,255,255,0.16) 56%, transparent 68%)",
-            }}
-            animate={{ x: ["-25%", "25%"], y: ["25%", "-25%"] }}
-            transition={{
-              duration: 9,
-              repeat: Infinity,
-              ease: "easeInOut",
-              repeatType: "mirror",
-            }}
-          />
+  className="absolute -inset-y-40 -inset-x-40 pointer-events-none blur-md"
+  style={{
+    background:
+      "linear-gradient(45deg, transparent 32%, rgba(255,255,255,0.09) 44%, rgba(255,255,255,0.15) 50%, rgba(255,255,255,0.09) 56%, transparent 68%)",
+  }}
+  animate={{ x: ["-25%", "25%"], y: ["25%", "-25%"] }}
+  transition={{
+    duration: 15,
+    repeat: Infinity,
+    ease: "easeInOut",
+    repeatType: "mirror",
+  }}
+/>
           <motion.div
             className="absolute -left-24 top-8 w-[360px] h-[360px] rounded-full opacity-25 blur-3xl"
             style={{
@@ -167,6 +156,80 @@ useEffect(() => {
             }}
           />
 
+         <svg
+           viewBox="0 0 360 540"
+           preserveAspectRatio="none"
+           className="absolute inset-0 w-full h-full pointer-events-none"
+         >
+           {/* Sol üst */}
+           <motion.line
+             x1="55" y1="0" x2="165" y2="130"
+             stroke="#D9A441"
+             strokeWidth="2"
+             strokeLinecap="round"
+             opacity="0.9"
+             initial={{ pathLength: 0 }}
+             animate={{ pathLength: 1 }}
+             transition={{ duration: 0.9, ease: "easeOut", delay: 0.2 }}
+           />
+
+           <motion.line
+             x1="28" y1="0" x2="125" y2="115"
+             stroke="#FFFFFF"
+             strokeWidth="1.5"
+             strokeLinecap="round"
+             opacity="0.28"
+             initial={{ pathLength: 0 }}
+             animate={{ pathLength: 1 }}
+             transition={{ duration: 0.9, ease: "easeOut", delay: 0.35 }}
+           />
+
+           <motion.line
+             x1="2" y1="0" x2="88" y2="100"
+             stroke="#FFFFFF"
+             strokeWidth="1.5"
+             strokeLinecap="round"
+             opacity="0.16"
+             initial={{ pathLength: 0 }}
+             animate={{ pathLength: 1 }}
+             transition={{ duration: 0.9, ease: "easeOut", delay: 0.5 }}
+           />
+
+           {/* Sağ alt */}
+           <motion.line
+             x1="305" y1="540" x2="195" y2="410"
+             stroke="#D9A441"
+             strokeWidth="2"
+             strokeLinecap="round"
+             opacity="0.9"
+             initial={{ pathLength: 0 }}
+             animate={{ pathLength: 1 }}
+             transition={{ duration: 0.9, ease: "easeOut", delay: 0.2 }}
+           />
+
+           <motion.line
+             x1="332" y1="540" x2="235" y2="425"
+             stroke="#FFFFFF"
+             strokeWidth="1.5"
+             strokeLinecap="round"
+             opacity="0.20"
+             initial={{ pathLength: 0 }}
+             animate={{ pathLength: 1 }}
+             transition={{ duration: 0.9, ease: "easeOut", delay: 0.35 }}
+           />
+
+           <motion.line
+             x1="358" y1="540" x2="272" y2="440"
+             stroke="#FFFFFF"
+             strokeWidth="1.5"
+             strokeLinecap="round"
+             opacity="0.16"
+             initial={{ pathLength: 0 }}
+             animate={{ pathLength: 1 }}
+             transition={{ duration: 0.9, ease: "easeOut", delay: 0.5 }}
+           />
+         </svg>
+
           <div className="relative flex flex-col gap-9">
             <div
                           className="absolute -top-10 -left8 w-[360px] h-[600px] opacity-95 pointer-events-none"
@@ -178,16 +241,14 @@ useEffect(() => {
                         <div className="absolute top-2 right-1 h-px w-60 bg-white/15" />
           </div>
 
-          <div className="relative mt-auto flex flex-col gap-4">
-
-
-            <div className="flex items-center gap-3">
-              <div className="h-px w-70 bg-white/15" />
-              <span className="font-sans text-[12px] text-blue-100/55 tracking-wide whitespace-nowrap">
-                Smart Spirit © 2026
-              </span>
-            </div>
-          </div>
+         <div className="relative mt-auto flex flex-col gap-4">
+           <div className="flex items-center gap-3 justify-start">
+             <span className="font-sans text-[12px] text-blue-100/55 tracking-wide whitespace-nowrap">
+               Smart Spirit © 2026
+             </span>
+             <div className="h-px w-25 bg-white/15" />
+           </div>
+         </div>
         </div>
 
         {/* SAĞ FORM */}
