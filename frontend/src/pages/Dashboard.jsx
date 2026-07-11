@@ -111,26 +111,70 @@ export default function Dashboard() {
       return
     }
 
-    fetch("http://localhost:8080/api/users/profile", {
-      headers: { Authorization: `Bearer ${token}` },
-    })
+    const loadProfile = (accessToken) => {
+      return fetch("http://localhost:8080/api/users/profile", {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      })
+    }
+
+    loadProfile(token)
       .then((res) => {
-        if (!res.ok) throw new Error("Token geçersiz")
+        if (res.status === 401) throw new Error("expired")
+        if (!res.ok) throw new Error("other")
         return res.json()
       })
       .then((data) => {
         setUsername(data.username || "")
         setStatus("ready")
       })
-      .catch(() => {
-        setStatus("error")
-        handleLogout()
+      .catch((err) => {
+        if (err.message === "expired") {
+          // access token süresi dolmuş, refresh token ile yenilemeyi dene
+          const refreshToken = localStorage.getItem("refreshToken")
+          if (!refreshToken) {
+            setStatus("error")
+            handleLogout()
+            return
+          }
+
+          fetch("http://localhost:8080/api/auth/refresh", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ refreshToken }),
+          })
+            .then((res) => res.json())
+            .then((refreshData) => {
+              if (!refreshData.success) throw new Error("refresh-failed")
+
+              localStorage.setItem("token", refreshData.token)
+              if (refreshData.refreshToken) {
+                localStorage.setItem("refreshToken", refreshData.refreshToken)
+              }
+
+              return loadProfile(refreshData.token).then((res) => {
+                if (!res.ok) throw new Error("still-failing")
+                return res.json()
+              })
+            })
+            .then((data) => {
+              setUsername(data.username || "")
+              setStatus("ready")
+            })
+            .catch(() => {
+              setStatus("error")
+              handleLogout()
+            })
+        } else {
+          setStatus("error")
+          handleLogout()
+        }
       })
   }, [navigate])
 
   const handleLogout = () => {
     localStorage.removeItem("isLoggedIn")
     localStorage.removeItem("token")
+    localStorage.removeItem("refreshToken")
     navigate("/")
   }
 
@@ -148,14 +192,7 @@ export default function Dashboard() {
                "linear-gradient(160deg, #17324A 0%, #1E3A5F 45%, #2A4A6B 100%)",
      }}
    >
-      <div
-        className="pointer-events-none fixed inset-0 opacity-[0.05]"
-        style={{
-          backgroundImage:
-           "linear-gradient(rgba(255,255,255,0.4) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.4) 1px, transparent 1px)",
-          backgroundSize: "34px 34px",
-        }}
-      />
+
       <div
               className="pointer-events-none fixed -left-32 bottom-0 w-[460px] h-[460px] rounded-full opacity-[0.12] blur-3xl"
         style={{
@@ -180,7 +217,7 @@ export default function Dashboard() {
               </span>
             </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-4">
             {status === "ready" && (
               <div className="hidden sm:flex items-center gap-2 rounded-xl border border-white/15 bg-white/5 pl-2 pr-3 py-1.5">
                 <div className="w-6 h-6 rounded-full bg-white/15 flex items-center justify-center">
@@ -208,7 +245,7 @@ export default function Dashboard() {
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.45 }}
-        className="relative max-w-5xl mx-auto px-6 py-14 md:py-20 flex flex-col md:flex-row md:items-end md:justify-between gap-8"
+        className="relative max-w-5xl mx-auto px-6 py-10 md:py-12 flex flex-col md:flex-row md:items-end md:justify-between gap-8"
       >
         <div>
           <h1 className="font-sans text-[28px] md:text-[36px] font-semibold tracking-[-0.02em] text-white">
@@ -218,13 +255,13 @@ export default function Dashboard() {
               ? "Oturum doğrulanamadı"
               : `Hoş geldin, ${username}`}
           </h1>
-          <p className="mt-2 font-sans text-[14px] text-white/55">
+          <p className="mt-4 font-sans text-[14px] text-white/55">
             Panele erişiminiz doğrulandı, aşağıdaki modülleri kullanabilirsiniz.
           </p>
         </div>
 
         {status === "ready" && (
-          <div className="relative flex gap-8 border-t md:border-t-0 md:border-l border-white/15 pt-5 md:pt-0 md:pl-8">
+          <div className="relative flex gap-8 border-t md:border-t-0 md:border-l border-white/25 pt-5 md:pt-0 md:pl-8">
             <div>
               <div className="text-[11px] uppercase tracking-wide text-white/40">
                 Rol
@@ -252,7 +289,7 @@ export default function Dashboard() {
         <section>
           <div className="flex items-end justify-between gap-4">
             <div>
-              <div className="h-px w-12 bg-white/25 mb-4" />
+              <div className="h-px w-28 bg-[#D9A441] mb-6" />
               <h2 className="font-sans text-[21px] font-semibold text-white">
                 Modüller
               </h2>
@@ -274,7 +311,7 @@ export default function Dashboard() {
                     mod.active ? "cursor-pointer" : ""
                   } ${isOpen ? "ring-2 ring-[#1E3A5F]/30" : ""}`}
                 >
-                  <div className="w-11 h-11 rounded-xl flex items-center justify-center mb-5 bg-[#EEF3F8] text-[#1E3A5F] border border-[#DDE6F0] transition-colors group-hover:bg-[#1E3A5F] group-hover:text-white">
+                  <div className="w-11 h-11 rounded-xl flex items-center justify-center mb-5 bg-[#EEF3F8] text-[#1E3A5F] border border-[#DDE6F0] border-b-2 border-b-[#D9A441]/50 transition-colors group-hover:bg-[#1E3A5F] group-hover:text-white group-hover:border-b-[#D9A441]">
                     <mod.icon className="w-5 h-5" />
                   </div>
 
@@ -288,7 +325,7 @@ export default function Dashboard() {
 
                   <div className="mt-5 flex items-center justify-between border-t border-[#EEF2F6] pt-4">
                     {mod.active ? (
-                      <span className="inline-flex items-center rounded-full bg-[#1E3A5F]/10 px-2.5 py-1 font-sans text-[11px] font-semibold tracking-wide uppercase text-[#1E3A5F]">
+                      <span className="inline-flex items-center rounded-full bg-[#1E3A5F]/10 px-2.5 py-1 font-sans text-[11px] font-semibold tracking-wide uppercase text-[#1E3A5F] border border-[#D9A441]/40">
                         Görüntüle
                       </span>
                     ) : (

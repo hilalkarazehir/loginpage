@@ -81,6 +81,7 @@ useEffect(() => {
       if (data.success) {
         localStorage.setItem("isLoggedIn", "true")
         localStorage.setItem("token", data.token)
+        localStorage.setItem("refreshToken", data.refreshToken)
 
         if (rememberMe) {
           localStorage.setItem("rememberMe", "true")
@@ -116,7 +117,7 @@ useEffect(() => {
   className="absolute -inset-y-40 -inset-x-40 pointer-events-none blur-md"
   style={{
     background:
-      "linear-gradient(45deg, transparent 32%, rgba(255,255,255,0.09) 44%, rgba(255,255,255,0.15) 50%, rgba(255,255,255,0.09) 56%, transparent 68%)",
+      "linear-gradient(50deg, transparent 32%, rgba(255,255,255,0.09) 44%, rgba(255,255,255,0.15) 50%, rgba(255,255,255,0.09) 56%, transparent 68%)",
   }}
   animate={{ x: ["-25%", "25%"], y: ["25%", "-25%"] }}
   transition={{
@@ -139,117 +140,113 @@ useEffect(() => {
             transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
           />
 
-          <div
-            className="absolute right-0 top-0 w-[70%] h-[55%] opacity-[0.16]"
-            style={{
-              background:
-                "linear-gradient(160deg, rgba(255,255,255,0.55) 0%, rgba(255,255,255,0.12) 55%, transparent 100%)",
-              clipPath: "polygon(100% 0%, 100% 100%, 0% 0%)",
-            }}
-          />
-          <div
-            className="absolute left-0 bottom-0 w-[70%] h-[55%] opacity-[0.14]"
-            style={{
-              background:
-                "linear-gradient(-20deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.1) 55%, transparent 100%)",
-              clipPath: "polygon(0% 100%, 0% 0%, 100% 100%)",
-            }}
-          />
+         <div
+           className="absolute right-0 top-0 w-[70%] h-[55%] opacity-[0.16]"
+           style={{
+             background:
+               "linear-gradient(50deg, rgba(255,255,255,0.55) 0%, rgba(255,255,255,0.12) 55%, transparent 100%)",
+             clipPath: "polygon(100% 0%, 100% 100%, 0% 0%)",
+           }}
+         />
+         <div
+           className="absolute left-0 bottom-0 w-[70%] h-[55%] opacity-[0.14]"
+           style={{
+             background:
+               "linear-gradient(50deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.1) 55%, transparent 100%)",
+             clipPath: "polygon(0% 100%, 0% 0%, 100% 100%)",
+           }}
+         />
 
          <svg
            viewBox="0 0 360 540"
            preserveAspectRatio="none"
            className="absolute inset-0 w-full h-full pointer-events-none"
          >
-           {/* Sol üst */}
-           <motion.line
-             x1="55" y1="0" x2="165" y2="130"
-             stroke="#D9A441"
-             strokeWidth="2"
-             strokeLinecap="round"
-             opacity="0.9"
-             initial={{ pathLength: 0 }}
-             animate={{ pathLength: 1 }}
-             transition={{ duration: 0.9, ease: "easeOut", delay: 0.2 }}
-           />
+          {/* Sol üst */}
+          <motion.line
+            x1="55" y1="0" x2="165" y2="130"
+            stroke="#D9A441"
+            strokeWidth="2"
+            strokeLinecap="round"
+            opacity="0.9"
+            initial={{ pathLength: 0 }}
+            animate={{ pathLength: 1 }}
+            transition={{ duration: 0.9, ease: "easeOut", delay: 0.2 }}
+          />
 
-           <motion.line
-             x1="28" y1="0" x2="125" y2="115"
-             stroke="#FFFFFF"
-             strokeWidth="1.5"
-             strokeLinecap="round"
-             opacity="0.28"
-             initial={{ pathLength: 0 }}
-             animate={{ pathLength: 1 }}
-             transition={{ duration: 0.9, ease: "easeOut", delay: 0.35 }}
-           />
+          <motion.line
+            x1="28" y1="0" x2="112" y2="100"
+            stroke="#FFFFFF"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            opacity="0.28"
+            initial={{ pathLength: 0 }}
+            animate={{ pathLength: 1 }}
+            transition={{ duration: 0.9, ease: "easeOut", delay: 0.35 }}
+          />
 
-           <motion.line
-             x1="2" y1="0" x2="88" y2="100"
-             stroke="#FFFFFF"
-             strokeWidth="1.5"
-             strokeLinecap="round"
-             opacity="0.16"
-             initial={{ pathLength: 0 }}
-             animate={{ pathLength: 1 }}
-             transition={{ duration: 0.9, ease: "easeOut", delay: 0.5 }}
-           />
+          <motion.line
+            x1="1" y1="0" x2="59" y2="69"
+            stroke="#FFFFFF"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            opacity="0.16"
+            initial={{ pathLength: 0 }}
+            animate={{ pathLength: 1 }}
+            transition={{ duration: 0.9, ease: "easeOut", delay: 0.5 }}
+          />
 
-           {/* Sağ alt */}
-           <motion.line
-             x1="305" y1="540" x2="195" y2="410"
-             stroke="#D9A441"
-             strokeWidth="2"
-             strokeLinecap="round"
-             opacity="0.9"
-             initial={{ pathLength: 0 }}
-             animate={{ pathLength: 1 }}
-             transition={{ duration: 0.9, ease: "easeOut", delay: 0.2 }}
-           />
+          {/* Sağ alt */}
+          <motion.line
+            x1="305" y1="540" x2="195" y2="410"
+            stroke="#D9A441"
+            strokeWidth="2"
+            strokeLinecap="round"
+            opacity="0.9"
+            initial={{ pathLength: 0 }}
+            animate={{ pathLength: 1 }}
+            transition={{ duration: 0.9, ease: "easeOut", delay: 0.2 }}
+          />
 
-           <motion.line
-             x1="332" y1="540" x2="235" y2="425"
-             stroke="#FFFFFF"
-             strokeWidth="1.5"
-             strokeLinecap="round"
-             opacity="0.20"
-             initial={{ pathLength: 0 }}
-             animate={{ pathLength: 1 }}
-             transition={{ duration: 0.9, ease: "easeOut", delay: 0.35 }}
-           />
+          <motion.line
+            x1="332" y1="540" x2="248" y2="440"
+            stroke="#FFFFFF"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            opacity="0.20"
+            initial={{ pathLength: 0 }}
+            animate={{ pathLength: 1 }}
+            transition={{ duration: 0.9, ease: "easeOut", delay: 0.35 }}
+          />
 
-           <motion.line
-             x1="358" y1="540" x2="272" y2="440"
-             stroke="#FFFFFF"
-             strokeWidth="1.5"
-             strokeLinecap="round"
-             opacity="0.16"
-             initial={{ pathLength: 0 }}
-             animate={{ pathLength: 1 }}
-             transition={{ duration: 0.9, ease: "easeOut", delay: 0.5 }}
-           />
+          <motion.line
+            x1="359" y1="540" x2="301" y2="471"
+            stroke="#FFFFFF"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            opacity="0.16"
+            initial={{ pathLength: 0 }}
+            animate={{ pathLength: 1 }}
+            transition={{ duration: 0.9, ease: "easeOut", delay: 0.5 }}
+          />
          </svg>
+<div className="absolute top-4 right-2 w-55 h-px bg-white/15" style={{ bottom: "auto" }} />
+        <div className="absolute inset-0 flex items-center justify-center opacity-70 pointer-events-none">
+          <SmartSpiritLogo variant="watermark" className="w-[340px] h-[560px]" />
+        </div>
 
-          <div className="relative flex flex-col gap-9">
-            <div
-                          className="absolute -top-10 -left8 w-[360px] h-[600px] opacity-95 pointer-events-none"
-                          animate={{ y: [0, -8, 0] }}
-                          transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-                        >
-                          <SmartSpiritLogo variant="watermark" className="w-full h-full" />
-                        </div>
-                        <div className="absolute top-2 right-1 h-px w-60 bg-white/15" />
-          </div>
 
-         <div className="relative mt-auto flex flex-col gap-4">
-           <div className="flex items-center gap-3 justify-start">
+         {/* Footer */}
+         <div className="absolute bottom-2 left-10 w-full">
+           <div className="flex items-center gap-3 -ml-8">
              <span className="font-sans text-[12px] text-blue-100/55 tracking-wide whitespace-nowrap">
                Smart Spirit © 2026
              </span>
-             <div className="h-px w-25 bg-white/15" />
+
+             <div className="h-px w-24 bg-white/15" />
            </div>
          </div>
-        </div>
+         </div>
 
         {/* SAĞ FORM */}
         <div
@@ -258,10 +255,10 @@ useEffect(() => {
         >
           <div className="w-full max-w-[380px]">
             <div className="mb-8">
-              <div className="font-sans text-[22px] font-semibold tracking-[0.04em] text-[#1E3A5F] mb-2 uppercase">
-                Yetkili Girişi
+              <div className="font-sans text-[22px] font-semibold tracking-[0.04em] text-[#1E3A5F] mb-2 ">
+                YETKİLİ GİRİŞİ
               </div>
-              <div className="h-px w-12 bg-[#1E3A5F]/25 mt-5" />
+              <div className="h-px w-45 bg-[#1E3A5F]/25 mt-2" />
             </div>
 
             <form onSubmit={handleLogin} noValidate className="space-y-5">
@@ -344,10 +341,7 @@ useEffect(() => {
                 </Label>
 
                 <div
-                                  className={`flex items-center gap-2.5 h-12 rounded-xl border bg-[#F8FAFC] px-3.5 transition-all duration-200 ease-out ${
-                                    errors.password
-                                      ? "border-destructive"
-                                      : "border-[#DDE3EA] focus-within:border-[#1E3A5F] focus-within:ring-4 focus-within:ring-[#1E3A5F]/10 focus-within:shadow-md focus-within:scale-[1.015]"
+                      className={`flex items-center gap-2.5 h-12 rounded-xl border bg-[#F8FAFC] px-3.5 transition-all duration-200 ease-out ${errors.password? "border-destructive": "border-[#DDE3EA] focus-within:border-[#1E3A5F] focus-within:ring-4 focus-within:ring-[#1E3A5F]/10 focus-within:shadow-md focus-within:scale-[1.015]"
                                   }`}
                                 >
                   <FieldIcon>
