@@ -11,13 +11,8 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 
-/**
- * Korumalı bir endpoint'e token olmadan ya da geçersiz token ile girilmeye
- * çalışıldığında Spring Security bu sınıfı çağırır. Amaç: mevcut ErrorResponse
- * formatını koruyarak 401 dönmek, frontend'de hiçbir şeyi kırmamak.
- */
 @Component
-public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
+public class UnauthorizedHandler implements AuthenticationEntryPoint {
 
     private final ObjectMapper objectMapper = new ObjectMapper().findAndRegisterModules();
 

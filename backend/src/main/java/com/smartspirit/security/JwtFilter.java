@@ -16,21 +16,12 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 import java.util.List;
 
-/**
- * Bu filter her HTTP isteğinde bir kez çalışır (adı da buradan geliyor: OncePerRequestFilter).
- * Görevi tek bir şey: Authorization header'ında geçerli bir access token varsa,
- * kullanıcıyı Spring Security'nin SecurityContext'ine "giriş yapmış" olarak yazmak.
- *
- * Burada DB'ye gitmiyoruz, çünkü JWT zaten kendi kendine yeten (self-contained) bir yapı:
- * username ve role bilgisi token'ın içinde imzalı olarak duruyor. Bu da JWT'nin
- * "stateless auth" felsefesinin tam da kendisi.
- */
 @Component
-public class JwtAuthenticationFilter extends OncePerRequestFilter {
+public class JwtFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
 
-    public JwtAuthenticationFilter(JwtUtil jwtUtil) {
+    public JwtFilter(JwtUtil jwtUtil) {
         this.jwtUtil = jwtUtil;
     }
 
@@ -44,8 +35,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             String token = authHeader.substring(7);
 
-            // validateAccessToken içinde imza + expiry + type=="access" hepsi kontrol ediliyor.
-            // Refresh token'la korumalı bir endpoint'e girilmeye çalışılırsa burada elenir.
             if (jwtUtil.validateAccessToken(token)) {
                 String username = jwtUtil.extractUsername(token);
                 String role = jwtUtil.extractRole(token);
@@ -59,9 +48,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
-            // Token geçersizse burada exception fırlatmıyoruz, sadece authenticate etmiyoruz.
-            // Kararı SecurityConfig'deki authorizeHttpRequests kuralları verecek:
-            // korumalı bir endpoint'se zaten 401 ile geri dönecek.
+
         }
 
         filterChain.doFilter(request, response);

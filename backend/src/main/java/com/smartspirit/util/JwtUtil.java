@@ -44,6 +44,16 @@ public class JwtUtil {
                 .compact();
     }
 
+    public boolean validateAccessToken(String token) {
+        try {
+            String type = Jwts.parserBuilder().setSigningKey(key).build()
+                    .parseClaimsJws(token).getBody().get("type", String.class);
+            return "access".equals(type);
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
     public boolean isRefreshToken(String token) {
         try {
             String type = Jwts.parserBuilder().setSigningKey(key).build()

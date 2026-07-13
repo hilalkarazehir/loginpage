@@ -4,24 +4,21 @@ import com.smartspirit.dto.LoginRequest;
 import com.smartspirit.dto.LoginResponse;
 import com.smartspirit.dto.RefreshTokenRequest;
 import com.smartspirit.service.LoginService;
-import com.smartspirit.util.JwtUtil;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
 @RestController
 @RequestMapping("/api/auth")
-@CrossOrigin(origins = "http://localhost:5173")
 public class LoginController {
 
     private final LoginService loginService;
-    private final JwtUtil jwtUtil;
 
-    public LoginController(LoginService loginService, JwtUtil jwtUtil) {
+    public LoginController(LoginService loginService) {
         this.loginService = loginService;
-        this.jwtUtil = jwtUtil;
     }
 
     @PostMapping("/login")
@@ -43,18 +40,10 @@ public class LoginController {
     }
 
     @GetMapping("/validate")
-    public ResponseEntity<Map<String, Object>> validate(@RequestHeader("Authorization") String authorizationHeader) {
-        if (!authorizationHeader.startsWith("Bearer ")) {
+    public ResponseEntity<Map<String, Object>> validate(Authentication authentication) {
+        if (authentication == null || !authentication.isAuthenticated()) {
             return ResponseEntity.status(401).body(Map.of("valid", false));
         }
-
-        String token = authorizationHeader.substring(7);
-        String username = jwtUtil.extractUsername(token);
-
-        if (username == null) {
-            return ResponseEntity.status(401).body(Map.of("valid", false));
-        }
-
-        return ResponseEntity.ok(Map.of("valid", true, "username", username));
+        return ResponseEntity.ok(Map.of("valid", true, "username", authentication.getName()));
     }
 }

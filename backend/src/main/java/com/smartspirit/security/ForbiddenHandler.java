@@ -11,13 +11,8 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 
-/**
- * Token geçerli ama kullanıcının rolü yetmiyorsa (örn. USER rolüyle /api/logs'a
- * girmeye çalışmak) burası devreye girer. 401'den farkı: kimlik doğrulandı,
- * sadece yetki yok. Bu yüzden 403 dönüyoruz.
- */
 @Component
-public class JwtAccessDeniedHandler implements AccessDeniedHandler {
+public class ForbiddenHandler implements AccessDeniedHandler {
 
     private final ObjectMapper objectMapper = new ObjectMapper().findAndRegisterModules();
 

@@ -4,7 +4,7 @@ import com.smartspirit.dto.LoginRequest;
 import com.smartspirit.dto.LoginResponse;
 import com.smartspirit.entity.User;
 import com.smartspirit.entity.UserLog;
-import com.smartspirit.repository.LoginRepository;
+import com.smartspirit.repository.UserRepository;
 import com.smartspirit.repository.UserLogRepository;
 import com.smartspirit.util.JwtUtil;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -15,22 +15,37 @@ import java.time.LocalDateTime;
 @Service
 public class LoginService {
 
-    private final LoginRepository loginRepository;
+    private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
     private final UserLogRepository userLogRepository;
 
-    public LoginService(LoginRepository loginRepository, PasswordEncoder passwordEncoder,
+    public LoginService(UserRepository userRepository, PasswordEncoder passwordEncoder,
                         JwtUtil jwtUtil, UserLogRepository userLogRepository) {
-        this.loginRepository = loginRepository;
+        this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
-        this.jwtUtil = jwtUtil;
+         this.jwtUtil = jwtUtil;
         this.userLogRepository = userLogRepository;
     }
 
     public LoginResponse login(LoginRequest request) {
-        User user = loginRepository.findByUsername(request.getUsername()).orElse(null);
 
+         final int MAX_FAILED_ATTEMPTS = 5;
+
+         final int LOCKOUT_MINUTES = 15;
+
+        User user = userRepository.findByUsername(request.getUsername()).orElse(null);
+        String username = request.getUsername();
+
+        long recentFailures = userLogRepository.countByUsernameAndActionAndCreatedDateAfter(
+                username, "LOGIN_FAILED_INVALID_CREDENTIALS", LocalDateTime.now().minusMinutes(LOCKOUT_MINUTES));
+
+        if (recentFailures >= MAX_FAILED_ATTEMPTS) {
+            logAttempt(username, "LOGIN_BLOCKED_TOO_MANY_ATTEMPTS");
+            return new LoginResponse(
+                    "Çok fazla başarısız deneme yapıldı. Lütfen " + LOCKOUT_MINUTES + " dakika sonra tekrar deneyin.",
+                    null, false, null);
+        }
         if (user == null || !passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             logAttempt(request.getUsername(), "LOGIN_FAILED_INVALID_CREDENTIALS");
             return new LoginResponse("Kullanıcı adı veya şifre hatalı", null, false, null);
@@ -57,7 +72,7 @@ public class LoginService {
             return new LoginResponse("Geçersiz veya süresi dolmuş refresh token", null, false, null);
         }
 
-        User user = loginRepository.findByUsername(username).orElse(null);
+        User user = userRepository.findByUsername(username).orElse(null);
         if (user == null || !user.isActive()) {
             return new LoginResponse("Kullanıcı bulunamadı veya aktif değil", null, false, null);
         }

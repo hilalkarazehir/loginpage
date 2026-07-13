@@ -4,7 +4,7 @@ import com.smartspirit.dto.LoginRequest;
 import com.smartspirit.dto.LoginResponse;
 import com.smartspirit.entity.Role;
 import com.smartspirit.entity.User;
-import com.smartspirit.repository.LoginRepository;
+import com.smartspirit.repository.UserRepository;
 import com.smartspirit.repository.UserLogRepository;
 import com.smartspirit.util.JwtUtil;
 import org.junit.jupiter.api.Test;
@@ -23,7 +23,7 @@ import static org.mockito.Mockito.*;
 class LoginServiceTest {
 
     @Mock
-    private LoginRepository loginRepository;
+    private UserRepository userRepository;
 
     @Mock
     private PasswordEncoder passwordEncoder;
@@ -53,7 +53,7 @@ class LoginServiceTest {
         user.setActive(true);
         user.setRole(role);
 
-        when(loginRepository.findByUsername("admin"))
+        when(userRepository.findByUsername("admin"))
                 .thenReturn(Optional.of(user));
 
         when(passwordEncoder.matches("123456", "encodedPassword"))
@@ -73,7 +73,7 @@ class LoginServiceTest {
         assertEquals("refresh-token", response.getRefreshToken());
         assertEquals("Giriş başarılı", response.getMessage());
 
-        verify(loginRepository).findByUsername("admin");
+        verify(userRepository).findByUsername("admin");
         verify(userLogRepository).save(any());
     }
     @Test
@@ -92,7 +92,7 @@ class LoginServiceTest {
         user.setActive(true);
         user.setRole(role);
 
-        when(loginRepository.findByUsername("admin"))
+        when(userRepository.findByUsername("admin"))
                 .thenReturn(Optional.of(user));
 
         when(passwordEncoder.matches("yanlisSifre", "encodedPassword"))
@@ -112,7 +112,7 @@ class LoginServiceTest {
         request.setUsername("unknown");
         request.setPassword("123456");
 
-        when(loginRepository.findByUsername("unknown"))
+        when(userRepository.findByUsername("unknown"))
                 .thenReturn(Optional.empty());
 
         LoginResponse response = loginService.login(request);
@@ -121,5 +121,70 @@ class LoginServiceTest {
         assertEquals("Kullanıcı adı veya şifre hatalı", response.getMessage());
 
         verify(userLogRepository).save(any());
+    }
+
+    @Test
+    void shouldRefreshTokenSuccessfully() {
+
+        String oldRefreshToken = "valid-refresh-token";
+
+        Role role = new Role();
+        role.setName("ADMIN");
+
+        User user = new User();
+        user.setUsername("admin");
+        user.setActive(true);
+        user.setRole(role);
+
+        when(jwtUtil.isRefreshToken(oldRefreshToken)).thenReturn(true);
+        when(jwtUtil.extractUsername(oldRefreshToken)).thenReturn("admin");
+        when(userRepository.findByUsername("admin")).thenReturn(Optional.of(user));
+        when(jwtUtil.generateToken("admin", "ADMIN")).thenReturn("new-jwt-token");
+        when(jwtUtil.generateRefreshToken("admin")).thenReturn("new-refresh-token");
+
+        LoginResponse response = loginService.refreshToken(oldRefreshToken);
+
+        assertTrue(response.isSuccess());
+        assertEquals("admin", response.getUsername());
+        assertEquals("new-jwt-token", response.getToken());
+        assertEquals("new-refresh-token", response.getRefreshToken());
+        assertEquals("Token yenilendi", response.getMessage());
+
+        verify(jwtUtil).isRefreshToken(oldRefreshToken);
+        verify(userRepository).findByUsername("admin");
+    }
+
+    @Test
+    void shouldRejectInvalidOrExpiredRefreshToken() {
+
+        String badRefreshToken = "expired-or-invalid-token";
+
+        when(jwtUtil.isRefreshToken(badRefreshToken)).thenReturn(false);
+
+        LoginResponse response = loginService.refreshToken(badRefreshToken);
+
+        assertFalse(response.isSuccess());
+        assertEquals("Geçersiz veya süresi dolmuş refresh token", response.getMessage());
+        assertNull(response.getToken());
+
+        verify(jwtUtil).isRefreshToken(badRefreshToken);
+        verify(userRepository, never()).findByUsername(any());
+    }
+
+    @Test
+    void shouldRejectRefreshWhenUserNotFoundOrInactive() {
+
+        String refreshToken = "valid-refresh-token";
+
+        when(jwtUtil.isRefreshToken(refreshToken)).thenReturn(true);
+        when(jwtUtil.extractUsername(refreshToken)).thenReturn("admin");
+        when(userRepository.findByUsername("admin")).thenReturn(Optional.empty());
+
+        LoginResponse response = loginService.refreshToken(refreshToken);
+
+        assertFalse(response.isSuccess());
+        assertEquals("Kullanıcı bulunamadı veya aktif değil", response.getMessage());
+
+        verify(userRepository).findByUsername("admin");
     }
 }
