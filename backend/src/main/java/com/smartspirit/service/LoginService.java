@@ -81,7 +81,6 @@ public class LoginService {
         String newRefreshToken = jwtUtil.generateRefreshToken(user.getUsername());
         return new LoginResponse("Token yenilendi", user.getUsername(), true, newToken, newRefreshToken);
     }
-
     private void logAttempt(String username, String action) {
         try {
             userLogRepository.save(new UserLog(username, action, LocalDateTime.now()));

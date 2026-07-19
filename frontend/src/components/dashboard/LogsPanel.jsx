@@ -3,11 +3,9 @@ import { motion, AnimatePresence } from "motion/react"
 import { History, RefreshCw, UserX, XCircle, UserCircle2 } from "lucide-react"
 import ActionBadge from "@/components/dashboard/ActionBadge"
 
-// props:
-// - isOpen: panel açık mı (Dashboard'daki "Loglar" kartına tıklanınca true olur)
 export default function LogsPanel({ isOpen }) {
   const [logs, setLogs] = useState([])
-  const [logsStatus, setLogsStatus] = useState("idle") // idle | loading | ready | error | forbidden
+  const [logsStatus, setLogsStatus] = useState("idle")
 
   const fetchLogs = () => {
     const token = localStorage.getItem("token")
@@ -30,7 +28,6 @@ export default function LogsPanel({ isOpen }) {
       })
   }
 
-  // Panel her açıldığında logları tazele
   useEffect(() => {
     if (isOpen) {
       fetchLogs()

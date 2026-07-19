@@ -4,7 +4,6 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-
 import java.security.Key;
 import java.util.Date;
 
@@ -46,8 +45,12 @@ public class JwtUtil {
 
     public boolean validateAccessToken(String token) {
         try {
-            String type = Jwts.parserBuilder().setSigningKey(key).build()
-                    .parseClaimsJws(token).getBody().get("type", String.class);
+            String type = Jwts.parserBuilder().
+                    setSigningKey(key)
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody()
+                    .get("type", String.class);
             return "access".equals(type);
         } catch (Exception e) {
             return false;
@@ -56,8 +59,12 @@ public class JwtUtil {
 
     public boolean isRefreshToken(String token) {
         try {
-            String type = Jwts.parserBuilder().setSigningKey(key).build()
-                    .parseClaimsJws(token).getBody().get("type", String.class);
+            String type = Jwts.parserBuilder().
+                    setSigningKey(key)
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody()
+                    .get("type", String.class);
             return "refresh".equals(type);
         } catch (Exception e) {
             return false;

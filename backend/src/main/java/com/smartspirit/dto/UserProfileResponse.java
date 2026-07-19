@@ -1,5 +1,7 @@
 package com.smartspirit.dto;
+import lombok.Getter;
 
+@Getter
 public class UserProfileResponse {
     private String username;
     private String role;
@@ -9,17 +11,5 @@ public class UserProfileResponse {
         this.username = username;
         this.role = role;
         this.message = message;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public String getRole() {
-        return role;
-    }
-
-    public String getMessage() {
-        return message;
     }
 }

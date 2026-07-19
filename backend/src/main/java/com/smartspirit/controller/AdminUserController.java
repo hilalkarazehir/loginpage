@@ -3,8 +3,9 @@ package com.smartspirit.controller;
 import com.smartspirit.dto.AdminUserResponse;
 import com.smartspirit.repository.UserRepository;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController

@@ -1,19 +1,16 @@
 package com.smartspirit.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
 import java.time.LocalDateTime;
 
+@Getter
+@AllArgsConstructor
 public class LogEntryResponse {
-    private String username;
-    private String action;
-    private LocalDateTime createdDate;
 
-    public LogEntryResponse(String username, String action, LocalDateTime createdDate) {
-        this.username = username;
-        this.action = action;
-        this.createdDate = createdDate;
-    }
+    private final String username;
+    private final String action;
+    private final LocalDateTime createdDate;
 
-    public String getUsername() { return username; }
-    public String getAction() { return action; }
-    public LocalDateTime getCreatedDate() { return createdDate; }
 }

@@ -1,5 +1,7 @@
 package com.smartspirit.dto;
+import lombok.Getter;
 
+@Getter
 public class LoginResponse {
     private String message;
     private String username;
@@ -19,9 +21,4 @@ public class LoginResponse {
         this.refreshToken = refreshToken;
     }
 
-    public String getMessage() { return message; }
-    public String getUsername() { return username; }
-    public boolean isSuccess() { return success; }
-    public String getToken() { return token; }
-    public String getRefreshToken() { return refreshToken; }
 }

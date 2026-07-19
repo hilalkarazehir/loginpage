@@ -1,5 +1,7 @@
 package com.smartspirit.dto;
+import lombok.Getter;
 
+@Getter
 public class RoleResponse {
     private Long id;
     private String name;
@@ -8,7 +10,4 @@ public class RoleResponse {
         this.id = id;
         this.name = name;
     }
-
-    public Long getId() { return id; }
-    public String getName() { return name; }
 }

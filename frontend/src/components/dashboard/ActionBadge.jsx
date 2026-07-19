@@ -1,4 +1,4 @@
-import { CheckCircle2, XCircle, UserX, History } from "lucide-react"
+import { CheckCircle2, XCircle, UserX, History ,ShieldAlert} from "lucide-react"
 
 const ACTION_META = {
   LOGIN_SUCCESS: {
@@ -11,6 +11,11 @@ const ACTION_META = {
     icon: XCircle,
     className: "bg-red-50 text-red-700 border-red-200",
   },
+LOGIN_BLOCKED_TOO_MANY_ATTEMPTS: {
+    label: "Çok fazla yanlış giriş yapıldı",
+    icon: ShieldAlert,
+    className: "bg-red-50 text-red-700 border-red-200",
+},
   LOGIN_FAILED_INACTIVE_ACCOUNT: {
     label: "Hesap aktif değil",
     icon: UserX,

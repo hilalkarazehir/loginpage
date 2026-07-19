@@ -14,26 +14,21 @@ const MODULES = [
     title: "Loglar",
     description: "Oturum açma ve parola değişikliği .",
     icon: FileText,
-    active: true,
   },
   {
     key: "roller",
     title: "Roller",
     description: "Sistemdeki rolleri görüntüleyin.",
     icon: Shield,
-    active: true,
   },
   {
     key: "kullanicilar",
     title: "Kullanıcılar",
     description: "Sistemdeki kullanıcıları listeleyin ve düzenleyin.",
     icon: Users,
-    active: true,
   },
 ]
 
-// Backend'deki rol isimlerini (ADMIN / USER) ekranda gösterilecek
-// Türkçe etikete çeviriyoruz. Yeni bir rol eklersen buraya da eklemen yeterli.
 const ROLE_LABELS = {
   ADMIN: "Yönetici",
   USER: "Kullanıcı",
@@ -47,7 +42,6 @@ export default function Dashboard() {
   const [expandedModule, setExpandedModule] = useState(null)
 
   const toggleModule = (mod) => {
-    if (!mod.active) return
     setExpandedModule((current) => (current === mod.key ? null : mod.key))
   }
 
@@ -58,8 +52,6 @@ export default function Dashboard() {
     navigate("/")
   }
 
-  // Sayfa açılınca: token var mı, profil bilgisi çekilebiliyor mu,
-  // gerekirse refresh token ile yenileme dene.
   useEffect(() => {
     const isLoggedIn = localStorage.getItem("isLoggedIn")
     const token = localStorage.getItem("token")
@@ -88,7 +80,6 @@ export default function Dashboard() {
       })
       .catch((err) => {
         if (err.message === "expired") {
-          // access token süresi dolmuş, refresh token ile yenilemeyi dene
           const refreshToken = localStorage.getItem("refreshToken")
           if (!refreshToken) {
             setStatus("error")
@@ -129,7 +120,6 @@ export default function Dashboard() {
           handleLogout()
         }
       })
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [navigate])
 
   const now = new Date()

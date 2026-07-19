@@ -36,7 +36,7 @@ class AdminUserControllerTest {
     private JwtUtil jwtUtil;
 
     @MockBean
-    private SystemErrorRepository systemErrorRepository; // GlobalExceptionHandler bunu istiyor
+    private SystemErrorRepository systemErrorRepository;
 
     @Test
     void adminTokenIleKullaniciListesiDoner() throws Exception {

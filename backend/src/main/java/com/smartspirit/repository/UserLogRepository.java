@@ -6,6 +6,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public interface UserLogRepository extends JpaRepository<UserLog, Long> {
-    List<UserLog> findAllByOrderByCreatedDateDesc();
+
+    List<UserLog> findTop100ByOrderByCreatedDateDesc();
+
     long countByUsernameAndActionAndCreatedDateAfter(String username, String action, LocalDateTime after);
 }

@@ -4,7 +4,6 @@ import com.smartspirit.dto.LogEntryResponse;
 import com.smartspirit.repository.UserLogRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @RestController
@@ -19,11 +18,15 @@ public class LogController {
 
     @GetMapping
     public ResponseEntity<List<LogEntryResponse>> getLogs() {
-        List<LogEntryResponse> logs = userLogRepository.findAllByOrderByCreatedDateDesc()
-                .stream()
-                .map(log -> new LogEntryResponse(log.getUsername(), log.getAction(), log.getCreatedDate()))
-                .limit(100)
-                .toList();
+
+        List<LogEntryResponse> logs =
+                userLogRepository.findTop100ByOrderByCreatedDateDesc()
+                        .stream()
+                        .map(log -> new LogEntryResponse(
+                                log.getUsername(),
+                                log.getAction(),
+                                log.getCreatedDate()))
+                        .toList();
 
         return ResponseEntity.ok(logs);
     }
