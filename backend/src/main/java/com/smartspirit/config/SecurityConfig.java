@@ -3,6 +3,7 @@ package com.smartspirit.config;
 import com.smartspirit.security.ForbiddenHandler;
 import com.smartspirit.security.UnauthorizedHandler;
 import com.smartspirit.security.JwtFilter;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -25,6 +26,9 @@ public class SecurityConfig {
     private final JwtFilter jwtFilter;
     private final UnauthorizedHandler unauthorizedHandler;
     private final ForbiddenHandler forbiddenHandler;
+
+    @Value("${cors.allowed-origins}")
+    private String allowedOrigins;
 
     public SecurityConfig(JwtFilter jwtFilter,
                           UnauthorizedHandler unauthorizedHandler,
@@ -64,7 +68,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:5173" , "http://localhost:5174" , "http://localhost:3000"));
+        configuration.setAllowedOrigins(List.of(allowedOrigins.split(",")));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
