@@ -27,7 +27,6 @@ export default function RolesPanel({ isOpen }) {
       })
   }
 
-  // Panel her açıldığında rol listesini tazele
   useEffect(() => {
     if (isOpen) {
       fetchRoles()
@@ -54,13 +53,6 @@ export default function RolesPanel({ isOpen }) {
                   Sistem rolleri
                 </h3>
               </div>
-              <button
-                onClick={fetchRoles}
-                className="inline-flex items-center gap-1.5 rounded-lg border border-[#E5EAF0] bg-white px-3 py-1.5 text-[12.5px] font-medium text-[#1E3A5F] hover:bg-[#F8FAFC] hover:border-[#DDE6F0] transition-colors"
-              >
-                <RefreshCw className={`w-3.5 h-3.5 ${rolesStatus === "loading" ? "animate-spin" : ""}`} />
-                Yenile
-              </button>
             </div>
 
             <div className="p-6">

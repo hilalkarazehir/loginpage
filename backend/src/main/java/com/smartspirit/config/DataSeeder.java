@@ -35,7 +35,6 @@ public class DataSeeder implements CommandLineRunner {
             admin.setPassword(passwordEncoder.encode("Admin1234"));
             admin.setFirstName("Admin");
             admin.setLastName("Kullanıcı");
-            admin.setActive(true);
             admin.setRole(adminRole);
             userRepository.save(admin);
         }
@@ -46,7 +45,6 @@ public class DataSeeder implements CommandLineRunner {
             demo.setPassword(passwordEncoder.encode("Demo1234"));
             demo.setFirstName("Demo");
             demo.setLastName("Kullanıcı");
-            demo.setActive(true);
             demo.setRole(userRole);
             userRepository.save(demo);
         }

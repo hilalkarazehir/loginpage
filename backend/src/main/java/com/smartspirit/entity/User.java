@@ -35,9 +35,6 @@ public class User {
     @Column(length = 16)
     private String phoneNumber;
 
-    @Column(nullable = false)
-    private boolean isActive = true;
-
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "role_id", nullable = false)
     private Role role;
@@ -46,7 +43,4 @@ public class User {
 
     private LocalDateTime updatedDate;
 
-    public boolean isActive() {
-        return isActive;
-    }
 }

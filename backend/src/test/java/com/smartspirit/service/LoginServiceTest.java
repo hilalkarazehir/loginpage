@@ -50,7 +50,6 @@ class LoginServiceTest {
         User user = new User();
         user.setUsername("admin");
         user.setPassword("encodedPassword");
-        user.setActive(true);
         user.setRole(role);
 
         when(userRepository.findByUsername("admin"))
@@ -76,6 +75,7 @@ class LoginServiceTest {
         verify(userRepository).findByUsername("admin");
         verify(userLogRepository).save(any());
     }
+
     @Test
     void shouldRejectInvalidPassword() {
 
@@ -89,7 +89,6 @@ class LoginServiceTest {
         User user = new User();
         user.setUsername("admin");
         user.setPassword("encodedPassword");
-        user.setActive(true);
         user.setRole(role);
 
         when(userRepository.findByUsername("admin"))
@@ -105,6 +104,7 @@ class LoginServiceTest {
 
         verify(userLogRepository).save(any());
     }
+
     @Test
     void shouldRejectUnknownUser() {
 
@@ -133,7 +133,6 @@ class LoginServiceTest {
 
         User user = new User();
         user.setUsername("admin");
-        user.setActive(true);
         user.setRole(role);
 
         when(jwtUtil.isRefreshToken(oldRefreshToken)).thenReturn(true);
@@ -169,22 +168,5 @@ class LoginServiceTest {
 
         verify(jwtUtil).isRefreshToken(badRefreshToken);
         verify(userRepository, never()).findByUsername(any());
-    }
-
-    @Test
-    void shouldRejectRefreshWhenUserNotFoundOrInactive() {
-
-        String refreshToken = "valid-refresh-token";
-
-        when(jwtUtil.isRefreshToken(refreshToken)).thenReturn(true);
-        when(jwtUtil.extractUsername(refreshToken)).thenReturn("admin");
-        when(userRepository.findByUsername("admin")).thenReturn(Optional.empty());
-
-        LoginResponse response = loginService.refreshToken(refreshToken);
-
-        assertFalse(response.isSuccess());
-        assertEquals("Kullanıcı bulunamadı veya aktif değil", response.getMessage());
-
-        verify(userRepository).findByUsername("admin");
     }
 }

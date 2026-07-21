@@ -68,8 +68,8 @@ public class LoginService {
         }
 
         User user = userRepository.findByUsername(username).orElse(null);
-        if (user == null || !user.isActive()) {
-            return new LoginResponse("Kullanıcı bulunamadı veya aktif değil", null, false, null);
+        if (user == null) {
+            return new LoginResponse("Kullanıcı bulunamadı", null, false, null);
         }
 
         String newToken = jwtUtil.generateToken(user.getUsername(), user.getRole().getName());
