@@ -32,7 +32,7 @@ public class DataSeeder implements CommandLineRunner {
         if (userRepository.findByUsername("admin").isEmpty()) {
             User admin = new User();
             admin.setUsername("admin");
-            admin.setPassword(passwordEncoder.encode("1234"));
+            admin.setPassword(passwordEncoder.encode("Admin1234"));
             admin.setFirstName("Admin");
             admin.setLastName("Kullanıcı");
             admin.setActive(true);
@@ -43,7 +43,7 @@ public class DataSeeder implements CommandLineRunner {
         if (userRepository.findByUsername("demo").isEmpty()) {
             User demo = new User();
             demo.setUsername("demo");
-            demo.setPassword(passwordEncoder.encode("1234"));
+            demo.setPassword(passwordEncoder.encode("Demo1234"));
             demo.setFirstName("Demo");
             demo.setLastName("Kullanıcı");
             demo.setActive(true);

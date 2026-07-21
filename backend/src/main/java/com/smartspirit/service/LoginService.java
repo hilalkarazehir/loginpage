@@ -51,11 +51,6 @@ public class LoginService {
             return new LoginResponse("Kullanıcı adı veya şifre hatalı", null, false, null);
         }
 
-        if (!user.isActive()) {
-            logAttempt(user.getUsername(), "LOGIN_FAILED_INACTIVE_ACCOUNT");
-            return new LoginResponse("Hesap aktif değil", null, false, null);
-        }
-
         logAttempt(user.getUsername(), "LOGIN_SUCCESS");
         String token = jwtUtil.generateToken(user.getUsername(), user.getRole().getName());
         String refreshToken = jwtUtil.generateRefreshToken(user.getUsername());

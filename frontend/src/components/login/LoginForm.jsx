@@ -22,21 +22,33 @@ export default function LoginForm({ initialUsername = "", initialRememberMe = fa
   const handleLogin = async (e) => {
     e.preventDefault()
     setApiError("")
-    const newErrors = { username: "", password: "" }
-    let hasError = false
+     const errors = {};
 
-    if (username === "") {
-      newErrors.username = "Kullanıcı adı boş geçilemez"
-      hasError = true
-    }
+       if (!username.trim()) {
+         errors.username = "Kullanıcı adı boş bırakılamaz.";
+       } else if (username.length > 15) {
+         errors.username = "Kullanıcı adı en fazla 15 karakter olabilir.";
+       } else if (username.includes(" ")) {
+         errors.username = "Kullanıcı adı boşluk içeremez.";
+       }
 
-    if (password === "") {
-      newErrors.password = "Parola boş geçilemez"
-      hasError = true
-    }
+       if (!password) {
+         errors.password = "Şifre boş bırakılamaz.";
+       } else if (password.length < 8 || password.length > 15) {
+         errors.password = "Şifre 8-15 karakter arasında olmalıdır.";
+       } else if (password.includes(" ")) {
+         errors.password = "Şifre boşluk içeremez.";
+       } else if (!/[A-Z]/.test(password)) {
+         errors.password = "Şifre en az 1 büyük harf içermelidir.";
+       } else if (!/[0-9]/.test(password)) {
+         errors.password = "Şifre en az 1 rakam içermelidir.";
+       }
+if (errors.username || errors.password) {
+  setErrors(errors)
+  return
+}
 
-    setErrors(newErrors)
-    if (hasError) return
+setLoading(true)
 
     setLoading(true)
     try {
