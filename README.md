@@ -23,6 +23,11 @@ React tabanlı kullanıcı arayüzü ile Spring Boot REST API'sinin entegre edil
 - Framer Motion (`motion/react`)
 - React Router
 
+**Altyapı / Deploy**
+
+- Docker & Docker Compose — `db` (PostgreSQL), `backend` (Spring Boot) ve `frontend` (Nginx ile servis edilen build) olmak üzere 3 servis
+- Tüm hassas/ortama özgü ayarlar (`SPRING_DATASOURCE_URL`, `SPRING_DATASOURCE_USERNAME`, `SPRING_DATASOURCE_PASSWORD`, `JWT_SECRET`, `CORS_ALLOWED_ORIGIN`, `PORT`) ortam değişkeni olarak dışarıdan verilir
+
 ## Proje Yapısı
 
 ```
@@ -37,7 +42,7 @@ backend/
     service/
       LoginService.java           # login + refreshToken iş mantığı, brute-force rate limiting, user_logs'a kayıt
     repository/
-      LoginRepository.java        # User için (findByUsername, findAll)
+      UserRepository.java         # User için (findByUsername, findAll)
       RoleRepository.java         # Role için (findByName, findAll)
       UserLogRepository.java      # UserLog için (findAllByOrderByCreatedDateDesc, başarısız deneme sayacı)
       SystemErrorRepository.java  # SystemError için
@@ -48,13 +53,13 @@ backend/
       UserProfileResponse.java, LogEntryResponse.java, RoleResponse.java, AdminUserResponse.java
       ErrorResponse.java
     exception/
-      GlobalExceptionHandler.java # tüm hataları tek yerden yönetir, beklenmeyen hataları error_logs'a kaydeder
+      GlobalExceptionHandler.java # doğrulama/header hatalarını ve beklenmeyen hataları yönetir; sadece beklenmeyen (500) hatalar error_logs'a kaydedilir
     security/
       JwtFilter.java              # her istekte Authorization header'ını okuyup SecurityContext'i doldurur
-      UnauthorizedHandle.java     # token yok/geçersiz → 401
+      UnauthorizedHandler.java    # token yok/geçersiz → 401
       ForbiddenHandler.java       # token geçerli ama rol yetmiyor → 403
     config/
-      SecurityConfig.java         # tüm HTTP güvenlik kuralları + CORS tek yerden burada
+      SecurityConfig.java         # tüm HTTP güvenlik kuralları + CORS tek yerden burada (origin'ler CORS_ALLOWED_ORIGIN env değişkeninden okunur)
       DataSeeder.java             # ilk açılışta admin/1234 (ADMIN) ve demo/1234 (USER) kullanıcılarını oluşturur
     util/
       JwtUtil.java                # access + refresh token üretimi, token tipi/username/role çıkarımı
@@ -62,7 +67,9 @@ backend/
     service/
       LoginServiceTest.java       # LoginService için 6 unit test (Mockito ile izole)
   src/main/resources/
-    application.properties
+    application.properties        # tüm değerler ortam değişkenlerinden okunur (bkz. Ortam Değişkenleri)
+  Dockerfile                       # multi-stage: Maven ile derleme → eclipse-temurin:17-jre üzerinde çalıştırma
+  .dockerignore
 
 frontend/
   src/
@@ -70,7 +77,6 @@ frontend/
       LoginPages.jsx     # giriş formu + "token hâlâ geçerliyse otomatik dashboard'a yönlendir"
       Dashboard.jsx       # modül kartları + genişleyen Loglar / Roller / Kullanıcılar panelleri
     components/
-      SmartSpiritLogo.jsx
       dashboard/
         DashboardHeader.jsx, ModuleCard.jsx
         LogsPanel.jsx      # GET /api/logs        — sadece ADMIN görebilir
@@ -82,11 +88,31 @@ frontend/
       ui/                  # shadcn bileşenleri
     lib/
       utils.js
-```
+  Dockerfile               # multi-stage: Node ile build → nginx:alpine ile statik servis
+  .dockerignore
 
+docker-compose.yml          # db (PostgreSQL 16) + backend + frontend servislerini birlikte ayağa kaldırır
+env.example                 # backend/compose için örnek ortam değişkenleri
+frontend/env.example        # frontend için örnek ortam değişkeni (VITE_API_URL)
+```
+## Canlı Demo
+
+- Frontend: https://loginpage-git-main-hilal1234.vercel.app 
+- Backend: https://loginpage-production-4d69.up.railway.app
 ## Kurulum ve Çalıştırma
 
+Proje iki şekilde çalıştırılabilir: **Docker ile** tek komutla tüm servisleri (veritabanı + backend + frontend) ayağa kaldırmak, ya da her servisi **manuel** kendi ortamınızda çalıştırmak.
+
 ### Gereksinimler
+
+**Docker ile çalıştırma için**
+
+| Yazılım        | Bağlantı |
+|----------------|----------|
+| Docker         | https://www.docker.com/ |
+| Docker Compose | Docker Desktop ile birlikte gelir |
+
+**Manuel çalıştırma için**
 
 | Yazılım    | Sürüm         | Bağlantı |
 |------------|---------------|----------|
@@ -102,9 +128,44 @@ git clone https://github.com/KULLANICI_ADIN/smart-spirit-login.git
 cd smart-spirit-login
 ```
 
-### 2. Veritabanını oluşturun
+### 2. Ortam değişkenlerini ayarlayın
 
-PostgreSQL'de aşağıdaki komutu çalıştırın:
+Uygulama artık tüm hassas/ortama özgü değerleri kod içine yazmak yerine ortam değişkeninden okur:
+
+| Değişken                      | Açıklama |
+|--------------------------------|----------|
+| `SPRING_DATASOURCE_URL`        | PostgreSQL bağlantı adresi (örn. `jdbc:postgresql://localhost:5432/smartspirit`, Docker'da `jdbc:postgresql://db:5432/smartspirit`) |
+| `SPRING_DATASOURCE_USERNAME`   | PostgreSQL kullanıcı adı (örn. `postgres`) |
+| `SPRING_DATASOURCE_PASSWORD` / `DB_PASSWORD` | PostgreSQL veritabanı şifreniz (Docker Compose'da `DB_PASSWORD` verilir, hem `db` servisine hem backend'e aktarılır) |
+| `JWT_SECRET`                   | JWT imzalama anahtarı (en az 32 karakter, rastgele bir metin) |
+| `CORS_ALLOWED_ORIGIN`          | Frontend'in çalıştığı adres(ler), virgülle ayrılabilir (örn. `http://localhost:5173`) |
+| `PORT`                         | Backend'in dinleyeceği port (varsayılan `8080`; Render gibi platformlar bunu otomatik atar) |
+
+Kök dizindeki `env.example` ve `frontend/env.example` dosyaları örnek değerleri gösterir — bunları `.env` olarak kopyalayıp kendi değerlerinizle doldurabilirsiniz.
+
+> `JWT_SECRET` için rastgele, en az 32 karakter uzunluğunda bir metin üretin (HS256 imzalama algoritmasının gereksinimi).
+
+### 3a. Docker ile çalıştırma (önerilen)
+
+Kök dizinde `.env` dosyanızı oluşturun (`env.example`'dan kopyalayıp `DB_PASSWORD` ve `JWT_SECRET` değerlerini doldurun), ardından:
+
+```bash
+docker compose up --build
+```
+
+Bu komut 3 servisi başlatır:
+
+| Servis     | Adres                     | Açıklama |
+|------------|---------------------------|----------|
+| `db`       | `localhost:5432`          | PostgreSQL 16, `smartspirit` veritabanı otomatik oluşturulur |
+| `backend`  | `http://localhost:8080`   | Spring Boot API |
+| `frontend` | `http://localhost:3000`   | Nginx ile servis edilen React build'i |
+
+`docker-compose.yml` içindeki `SPRING_DATASOURCE_URL` zaten servis adı üzerinden (`db`) veritabanına bağlanacak şekilde ayarlıdır; bu değeri elle değiştirmenize gerek yoktur.
+
+### 3b. Manuel çalıştırma
+
+**Veritabanını oluşturun**
 
 ```sql
 CREATE DATABASE smartspirit;
@@ -112,39 +173,19 @@ CREATE DATABASE smartspirit;
 
 Tablolar uygulama ilk çalıştığında Hibernate tarafından otomatik oluşturulur (`spring.jpa.hibernate.ddl-auto=update`).
 
-### 3. Ortam değişkenlerini ayarlayın
-
-Uygulama iki hassas değeri kod içine yazmak yerine ortam değişkeninden okur:
-
-| Değişken     | Açıklama |
-|--------------|----------|
-| `DB_PASSWORD` | PostgreSQL veritabanı şifreniz |
-| `JWT_SECRET`  | JWT imzalama anahtarı (en az 32 karakter, rastgele bir metin) |
-
-**Windows (PowerShell)**
-
-```powershell
-$env:DB_PASSWORD="postgres_sifreniz"
-$env:JWT_SECRET="jwt_secret_key"
-```
-
-**Windows (Komut İstemi)**
-
-```cmd
-set DB_PASSWORD=postgres_sifreniz
-set JWT_SECRET=jwt_secret_key
-```
-
-**Linux / macOS**
+**Ortam değişkenlerini ayarlayın (Linux / macOS)**
 
 ```bash
-export DB_PASSWORD=postgres_sifreniz
-export JWT_SECRET=jwt_secret_key
+export SPRING_DATASOURCE_URL="jdbc:postgresql://localhost:5432/smartspirit"
+export SPRING_DATASOURCE_USERNAME="postgres"
+export SPRING_DATASOURCE_PASSWORD="postgres_sifreniz"
+export JWT_SECRET="jwt_secret_key"
+export CORS_ALLOWED_ORIGIN="http://localhost:5173"
 ```
 
-> `JWT_SECRET` için yukarıdaki örnek değeri aynen kullanabilirsiniz veya kendi rastgele metninizi üretebilirsiniz — önemli olan en az 32 karakter uzunluğunda olması (HS256 imzalama algoritmasının gereksinimi).
+Windows (PowerShell) için `export` yerine `$env:DEĞİŞKEN="değer"`, Komut İstemi için `set DEĞİŞKEN=değer` kullanın.
 
-### 4. Backend'i çalıştırın
+**Backend'i çalıştırın**
 
 ```bash
 cd backend
@@ -158,9 +199,9 @@ cd backend
 mvnw.cmd spring-boot:run
 ```
 
-Backend `http://localhost:8080` adresinde ayağa kalkar.
+Backend varsayılan olarak `http://localhost:8080` adresinde ayağa kalkar (`PORT` ile değiştirilebilir).
 
-### 5. Testleri çalıştırın
+**Testleri çalıştırın**
 
 ```bash
 cd backend
@@ -176,7 +217,7 @@ mvnw.cmd test
 
 Bu komut `src/test/java/com/smartspirit/service/LoginServiceTest.java` içindeki 6 unit testi çalıştırır (bkz. [Testler](#testler)).
 
-### 6. Frontend'i çalıştırın
+**Frontend'i çalıştırın**
 
 ```bash
 cd frontend
@@ -186,14 +227,13 @@ npm run dev
 
 Frontend `http://localhost:5173` adresinde çalışır.
 
-> **Not:** Vite, 5173 portu doluysa otomatik olarak 5174'e geçer. Bu durumda backend'in CORS ayarında (`SecurityConfig.corsConfigurationSource()`) sadece 5173 tanımlıysa istekler CORS hatasıyla reddedilir. Böyle bir hata alırsanız ya açık kalan eski `npm run dev` sürecini kapatıp 5173'ü boşaltın, ya da `SecurityConfig` içindeki `setAllowedOrigins` listesine `http://localhost:5174`'ü de ekleyin.
 
 ## Test Kullanıcıları
 
-| Kullanıcı adı | Şifre | Rol |
-|---------------|-------|-----|
-| `admin`       | `1234` | `ADMIN` |
-| `demo`        | `1234` | `USER`  |
+| Kullanıcı adı | Şifre       | Rol |
+|---------------|-------------|-----|
+| `admin`       | `Admin1234` | `ADMIN` |
+| `demo`        | `Demo1234`  | `USER`  |
 
 Her iki kullanıcı da veritabanında BCrypt ile hashlenmiş şifreyle saklanır ve uygulama ilk açıldığında `DataSeeder` tarafından otomatik oluşturulur (zaten varlarsa tekrar oluşturulmaz — uygulamayı defalarca yeniden başlatmak güvenlidir).
 
@@ -208,7 +248,7 @@ Her iki kullanıcı da veritabanında BCrypt ile hashlenmiş şifreyle saklanır
 - **Rol listesi:** Dashboard'daki **Roller** paneli, sistemdeki tüm rolleri (`GET /api/roles`) listeler.
 - **Kullanıcı listesi:** Dashboard'daki **Kullanıcılar** paneli, sistemdeki tüm kullanıcıları (`GET /api/admin/users`) kullanıcı adı, ad-soyad ve rolleriyle birlikte listeler — sadece `ADMIN` rolüyle erişilebilir.
 - **Alan doğrulama:** `@NotBlank` ile boş kullanıcı adı/şifre/refresh token istekleri reddedilir.
-- **Merkezi hata yönetimi:** `GlobalExceptionHandler` doğrulama hatalarını, eksik header'ları, geçersiz token'ları ve beklenmeyen hataları tek yerden yönetir; kullanıcıya asla stack trace gösterilmez, beklenmeyen hatalar ayrıca `error_logs` tablosuna kaydedilir.
+- **Merkezi hata yönetimi:** `GlobalExceptionHandler`, controller katmanında oluşan doğrulama hatalarını (400), eksik header'ları (400) ve beklenmeyen çalışma zamanı hatalarını (500) tek yerden yönetir; kullanıcıya asla stack trace gösterilmez. Bunlardan sadece **beklenmeyen (500) hatalar** `error_logs` tablosuna kaydedilir — validasyon/header hataları ile geçersiz giriş bilgisi gibi "beklenen" iş kuralı sonuçları `error_logs`'a yazılmaz. Geçersiz/süresi dolmuş token'lar ise `GlobalExceptionHandler`'dan bağımsız olarak, Spring Security filter zincirindeki `UnauthorizedHandler` (401) ve `ForbiddenHandler` (403) tarafından karşılanır; bunlar da `error_logs`'a kayıt atmaz.
 - **Otomatik oturum devamlılığı:** Token süresi dolmadıysa, giriş sayfasına tekrar gelen kullanıcı otomatik olarak dashboard'a yönlendirilir.
 - **Kurumsal, sade arayüz tasarımı** (Tailwind v4 + shadcn/ui + Framer Motion geçişleri).
 
@@ -223,7 +263,7 @@ Her iki kullanıcı da veritabanında BCrypt ile hashlenmiş şifreyle saklanır
 5. **`shouldRejectInvalidOrExpiredRefreshToken`** — Geçersiz/süresi dolmuş refresh token'ın reddedildiğini doğrular.
 6. **`shouldRejectRefreshWhenUserNotFoundOrInactive`** — Refresh token'daki kullanıcı artık yoksa/aktif değilse isteğin reddedildiğini doğrular.
 
-Bu testlerde `LoginRepository`, `PasswordEncoder`, `JwtUtil` ve `UserLogRepository` `@Mock` ile sahtelenir; böylece gerçek bir veritabanı veya JWT imzalama işlemine ihtiyaç duymadan sadece `LoginService`'in iş mantığı doğrulanır.
+Bu testlerde `UserRepository`, `PasswordEncoder`, `JwtUtil` ve `UserLogRepository` `@Mock` ile sahtelenir; böylece gerçek bir veritabanı veya JWT imzalama işlemine ihtiyaç duymadan sadece `LoginService`'in iş mantığı doğrulanır.
 
 ## Bilinen Sınırlamalar / Kapsam Dışı Bırakılanlar
 
@@ -232,4 +272,3 @@ Bu testlerde `LoginRepository`, `PasswordEncoder`, `JwtUtil` ve `UserLogReposito
 - **Şifre sıfırlama akışı yok.**
 - **Pagination yok.** `/api/logs` her zaman en yeni 100 kaydı döner.
 - **Kullanıcı düzenleme/silme yok.** Kullanıcılar paneli şu an salt okunur listeleme yapıyor; aktif/pasif yapma veya bilgi düzenleme gibi aksiyonlar henüz eklenmedi.
- sağlar.

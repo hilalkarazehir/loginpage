@@ -5,17 +5,12 @@ import LoginForm from "@/components/login/LoginForm"
 
 export default function LoginPages() {
   const navigate = useNavigate()
-  const [initialUsername, setInitialUsername] = useState("")
-  const [initialRememberMe, setInitialRememberMe] = useState(false)
-
-  useEffect(() => {
+  const [initialUsername] = useState(() => {
     const savedRemember = localStorage.getItem("rememberMe")
     const savedUsername = localStorage.getItem("rememberUsername")
-    if (savedRemember === "true" && savedUsername) {
-      setInitialRememberMe(true)
-      setInitialUsername(savedUsername)
-    }
-  }, [])
+    return savedRemember === "true" && savedUsername ? savedUsername : ""
+  })
+  const [initialRememberMe] = useState(() => localStorage.getItem("rememberMe") === "true")
 
   useEffect(() => {
     const token = localStorage.getItem("token")
