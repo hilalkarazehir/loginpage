@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { motion } from "motion/react"
-import { FileText, Shield, Users, Clock } from "lucide-react"
+import { FileText, Shield, Users, Clock, Gamepad2, ArrowRight } from "lucide-react"
 import UsersPanel from "@/components/dashboard/UsersPanel"
 import DashboardHeader from "@/components/dashboard/DashboardHeader"
 import ModuleCard from "@/components/dashboard/ModuleCard"
@@ -210,6 +210,43 @@ export default function Dashboard() {
           <LogsPanel isOpen={expandedModule === "loglar"} />
           <RolesPanel isOpen={expandedModule === "roller"} />
           <UsersPanel isOpen={expandedModule === "kullanicilar"} />
+        </section>
+
+        {/* MINI GAME CTA */}
+        <section className="mt-10">
+          <div className="h-px w-28 bg-[#D9A441] mb-6" />
+
+          <motion.div
+            initial={{ opacity: 0, y: 14 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.3 }}
+            onClick={() => navigate("/game")}
+            className="group relative cursor-pointer overflow-hidden rounded-2xl border border-[#D9A441]/40 p-6 md:p-7 shadow-[0_20px_50px_-28px_rgba(4,15,30,0.65)] transition-all hover:-translate-y-1 hover:shadow-[0_28px_65px_-30px_rgba(4,15,30,0.75)] flex flex-col md:flex-row md:items-center md:justify-between gap-5"
+            style={{ background: "linear-gradient(120deg, #17324A 0%, #1E3A5F 55%, #23456B 100%)" }}
+          >
+            <div
+              className="pointer-events-none absolute -right-20 -top-24 w-72 h-72 rounded-full opacity-20 blur-3xl"
+              style={{ background: "radial-gradient(circle, rgba(217,164,65,0.7) 0%, transparent 70%)" }}
+            />
+
+            <div className="relative flex items-center gap-4">
+              <div className="w-12 h-12 shrink-0 rounded-xl flex items-center justify-center bg-[#D9A441]/15 text-[#D9A441] border border-[#D9A441]/40 transition-colors group-hover:bg-[#D9A441] group-hover:text-[#17324A]">
+                <Gamepad2 className="w-6 h-6" />
+              </div>
+              <div>
+                <span className="inline-flex items-center rounded-full bg-[#D9A441]/15 px-2.5 py-0.5 font-sans text-[10.5px] font-semibold tracking-wide uppercase text-[#D9A441] border border-[#D9A441]/40 mb-2">
+                  Yeni
+                </span>
+                <h3 className="font-sans text-[17px] font-semibold text-white">Smart Spirit Mini Game</h3>
+
+              </div>
+            </div>
+
+            <span className="relative shrink-0 inline-flex items-center gap-2 rounded-xl bg-[#D9A441] px-5 py-2.5 font-sans text-[13.5px] font-semibold text-[#17324A] transition-all group-hover:gap-3 self-start md:self-center">
+              Oyna
+              <ArrowRight className="w-4 h-4" />
+            </span>
+          </motion.div>
         </section>
       </main>
     </div>

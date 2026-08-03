@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom"
 import LoginPages from "./pages/LoginPages"
 import Dashboard from "./pages/Dashboard"
+import MiniGamePage from "./pages/MiniGamePage"
 import "./App.css"
 
 function App() {
@@ -9,6 +10,7 @@ function App() {
       <Routes>
         <Route path="/" element={<LoginPages />} />
         <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/game" element={<MiniGamePage />} />
       </Routes>
     </BrowserRouter>
   )
