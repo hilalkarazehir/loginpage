@@ -95,3 +95,26 @@
   from { opacity: 0; transform: translateY(6px); }
   to { opacity: 1; transform: translateY(0); }
 }
+@keyframes gradient-shimmer {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+@keyframes glow-pulse {
+  0%, 100% { box-shadow: 0 0 0px 0px rgba(217, 164, 65, 0.0); }
+  50% { box-shadow: 0 0 18px 2px rgba(217, 164, 65, 0.45); }
+}
+@keyframes shine-sweep {
+  0% { transform: translateX(-140%) skewX(-18deg); }
+  35%, 100% { transform: translateX(260%) skewX(-18deg); }
+}
+@keyframes beam-flow {
+  0% { top: -10%; opacity: 0; }
+  15% { opacity: 1; }
+  85% { opacity: 1; }
+  100% { top: 105%; opacity: 0; }
+}
+@keyframes slow-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}

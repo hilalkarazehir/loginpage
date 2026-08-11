@@ -24,15 +24,15 @@ public class LoginService {
                         JwtUtil jwtUtil, UserLogRepository userLogRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
-         this.jwtUtil = jwtUtil;
+        this.jwtUtil = jwtUtil;
         this.userLogRepository = userLogRepository;
     }
 
     public LoginResponse login(LoginRequest request) {
 
-         final int MAX_FAILED_ATTEMPTS = 5;
+        final int MAX_FAILED_ATTEMPTS = 5;
 
-         final int LOCKOUT_MINUTES = 15;
+        final int LOCKOUT_MINUTES = 15;
 
         User user = userRepository.findByUsername(request.getUsername()).orElse(null);
         String username = request.getUsername();
@@ -52,8 +52,8 @@ public class LoginService {
         }
 
         logAttempt(user.getUsername(), "LOGIN_SUCCESS");
-        String token = jwtUtil.generateToken(user.getUsername(), user.getRole().getName());
-        String refreshToken = jwtUtil.generateRefreshToken(user.getUsername());
+        String token = jwtUtil.generateToken(user.getUsername(), user.getRole().getName(), user.getTokenVersion());
+        String refreshToken = jwtUtil.generateRefreshToken(user.getUsername(), user.getTokenVersion());
         return new LoginResponse("Giriş başarılı", user.getUsername(), true, token, refreshToken);
     }
 
@@ -72,8 +72,15 @@ public class LoginService {
             return new LoginResponse("Kullanıcı bulunamadı", null, false, null);
         }
 
-        String newToken = jwtUtil.generateToken(user.getUsername(), user.getRole().getName());
-        String newRefreshToken = jwtUtil.generateRefreshToken(user.getUsername());
+        // Şifre sıfırlama sonrası tokenVersion artırılmış olabilir; eski refresh
+        // token'la yeni token üretilmesini engelliyoruz (revocation kontrolü).
+        Integer tokenVersion = jwtUtil.extractTokenVersion(refreshToken);
+        if (tokenVersion == null || !tokenVersion.equals(user.getTokenVersion())) {
+            return new LoginResponse("Geçersiz veya süresi dolmuş refresh token", null, false, null);
+        }
+
+        String newToken = jwtUtil.generateToken(user.getUsername(), user.getRole().getName(), user.getTokenVersion());
+        String newRefreshToken = jwtUtil.generateRefreshToken(user.getUsername(), user.getTokenVersion());
         return new LoginResponse("Token yenilendi", user.getUsername(), true, newToken, newRefreshToken);
     }
     private void logAttempt(String username, String action) {

@@ -1,0 +1,144 @@
+
+.spirit-figure {
+  position: relative;
+  width: 8.5rem;
+  height: 8.5rem;
+  display: inline-flex;
+  align-items: flex-end;
+  justify-content: center;
+  overflow: visible;
+}
+
+.spirit-figure--sm {
+  width: 5.5rem;
+  height: 5.5rem;
+}
+
+.spirit-figure--md {
+  width: 8.5rem;
+  height: 8.5rem;
+}
+
+.spirit-figure--lg {
+  width: 11rem;
+  height: 11rem;
+}
+
+.spirit-images-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-origin: bottom center;
+}
+
+.spirit-layer {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: bottom center;
+  pointer-events: none;
+  will-change: opacity, transform;
+}
+
+/* 1. ODAKLI: */
+@keyframes thinkingBreath {
+  0%, 100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-3px) rotate(1.5deg);
+  }
+}
+.spirit-odakli .spirit-images-container {
+  animation: thinkingBreath 3.5s ease-in-out infinite;
+}
+
+/* 2. MUTLU: */
+@keyframes naturalBouncyHop {
+  0%, 100% {
+    transform: translateY(0) scale(1, 1);
+  }
+  30% {
+    transform: translateY(0) scale(1.04, 0.96);
+  }
+  60% {
+    transform: translateY(-6px) scale(0.97, 1.03);
+  }
+}
+.spirit-mutlu .spirit-images-container {
+  animation: naturalBouncyHop 1.2s cubic-bezier(0.25, 1, 0.5, 1) infinite;
+}
+
+/* 3. ÜZGÜN */
+.spirit-uzgun .spirit-images-container {
+  animation: none !important;
+  transform: translateY(-3px) scale(1.08) !important;
+  filter: brightness(0.92);
+}
+
+/* 4. YANMIŞ  */
+@keyframes glitchFlicker {
+  0%, 100% { transform: translate(0, 0); }
+  25% { transform: translate(-0.5px, 0.5px); }
+  50% { transform: translate(0.5px, -0.5px); }
+  75% { transform: translate(-0.5px, 0); }
+}
+.spirit-yanmis .spirit-images-container {
+  animation: microGlitch 1.2s ease-in-out infinite;
+  filter: grayscale(0.5) contrast(1.1);
+}
+
+/* 5. TEBRİK */
+@keyframes celebrateDance {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-5px) rotate(3deg); }
+}
+.spirit-tebrik .spirit-images-container {
+  animation: celebrateDance 1s ease-in-out infinite;
+}
+.spirit-particles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 10;
+}
+
+/* Akan Gözyaşı */
+@keyframes tearStream {
+  0% { transform: translateY(0); opacity: 0; }
+  30% { opacity: 1; }
+  100% { transform: translateY(22px); opacity: 0; }
+}
+.spirit-tears .tear {
+  position: absolute;
+  top: 45%;
+  width: 4px;
+  height: 8px;
+  background: #63b3ed;
+  border-radius: 3px;
+  animation: tearStream 1.2s ease-in infinite;
+}
+.spirit-tears .tear-left { left: 36%; animation-delay: 0s; }
+.spirit-tears .tear-right { right: 36%; animation-delay: 0.4s; }
+
+/* Duman Efekti (Yanmış Modu) */
+@keyframes smokeRise {
+  0% { transform: translateY(0) scale(0.5); opacity: 0; }
+  50% { opacity: 0.5; }
+  100% { transform: translateY(-25px) scale(1.2); opacity: 0; }
+}
+.spirit-smoke .smoke-puff {
+  position: absolute;
+  top: 15%;
+  width: 12px;
+  height: 12px;
+  background: rgba(220, 220, 220, 0.4);
+  border-radius: 50%;
+  filter: blur(3px);
+  animation: smokeRise 1.6s ease-out infinite;
+}
+.spirit-smoke .smoke-1 { left: 32%; animation-delay: 0s; }
+.spirit-smoke .smoke-2 { right: 32%; animation-delay: 0.5s; }

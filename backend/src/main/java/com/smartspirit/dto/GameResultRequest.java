@@ -16,4 +16,13 @@ public class GameResultRequest {
     @Min(value = -1000, message = "Geçersiz skor")
     @Max(value = 100000, message = "Geçersiz skor")
     private Integer score;
+
+    @Min(value = 0, message = "Geçersiz doğru yakalama sayısı")
+    private Integer correctCatches;
+
+    @Min(value = 0, message = "Geçersiz kombo")
+    private Integer maxCombo;
+
+    @Min(value = 0, message = "Geçersiz süre")
+    private Integer durationSeconds;
 }

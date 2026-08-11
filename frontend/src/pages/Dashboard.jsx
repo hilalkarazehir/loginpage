@@ -1,33 +1,13 @@
 import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { motion } from "motion/react"
-import { FileText, Shield, Users, Clock, Gamepad2, ArrowRight } from "lucide-react"
-import UsersPanel from "@/components/dashboard/UsersPanel"
+import { Shield, Clock } from "lucide-react"
 import DashboardHeader from "@/components/dashboard/DashboardHeader"
-import ModuleCard from "@/components/dashboard/ModuleCard"
+import DashboardSidebar from "@/components/dashboard/DashboardSidebar"
+import { authFetch } from "@/lib/apiClient"
+import UsersPanel from "@/components/dashboard/UsersPanel"
 import LogsPanel from "@/components/dashboard/LogsPanel"
 import RolesPanel from "@/components/dashboard/RolesPanel"
-
-const MODULES = [
-  {
-    key: "loglar",
-    title: "Loglar",
-    description: "Oturum açma ve parola değişikliği .",
-    icon: FileText,
-  },
-  {
-    key: "roller",
-    title: "Roller",
-    description: "Sistemdeki rolleri görüntüleyin.",
-    icon: Shield,
-  },
-  {
-    key: "kullanicilar",
-    title: "Kullanıcılar",
-    description: "Sistemdeki kullanıcıları listeleyin ve düzenleyin.",
-    icon: Users,
-  },
-]
 
 const ROLE_LABELS = {
   ADMIN: "Yönetici",
@@ -39,11 +19,7 @@ export default function Dashboard() {
   const [username, setUsername] = useState("")
   const [role, setRole] = useState("")
   const [status, setStatus] = useState("loading")
-  const [expandedModule, setExpandedModule] = useState(null)
-
-  const toggleModule = (mod) => {
-    setExpandedModule((current) => (current === mod.key ? null : mod.key))
-  }
+  const [activeTab, setActiveTab] = useState("dashboard") // Varsayılan sekme
 
   const handleLogout = () => {
     localStorage.removeItem("isLoggedIn")
@@ -51,7 +27,6 @@ export default function Dashboard() {
     localStorage.removeItem("refreshToken")
     navigate("/")
   }
-
   useEffect(() => {
     const isLoggedIn = localStorage.getItem("isLoggedIn")
     const token = localStorage.getItem("token")
@@ -61,16 +36,9 @@ export default function Dashboard() {
       return
     }
 
-    const loadProfile = (accessToken) => {
-      return fetch(`${import.meta.env.VITE_API_URL}/api/users/profile`, {
-        headers: { Authorization: `Bearer ${accessToken}` },
-      })
-    }
-
-    loadProfile(token)
+    authFetch("/api/users/profile")
       .then((res) => {
-        if (res.status === 401) throw new Error("expired")
-        if (!res.ok) throw new Error("other")
+        if (!res.ok) throw new Error("profile-fetch-failed")
         return res.json()
       })
       .then((data) => {
@@ -78,177 +46,166 @@ export default function Dashboard() {
         setRole(data.role || "")
         setStatus("ready")
       })
-      .catch((err) => {
-        if (err.message === "expired") {
-          const refreshToken = localStorage.getItem("refreshToken")
-          if (!refreshToken) {
-            setStatus("error")
-            handleLogout()
-            return
-          }
-
-          fetch(`${import.meta.env.VITE_API_URL}/api/auth/refresh`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ refreshToken }),
-          })
-            .then((res) => res.json())
-            .then((refreshData) => {
-              if (!refreshData.success) throw new Error("refresh-failed")
-
-              localStorage.setItem("token", refreshData.token)
-              if (refreshData.refreshToken) {
-                localStorage.setItem("refreshToken", refreshData.refreshToken)
-              }
-
-              return loadProfile(refreshData.token).then((res) => {
-                if (!res.ok) throw new Error("still-failing")
-                return res.json()
-              })
-            })
-            .then((data) => {
-              setUsername(data.username || "")
-              setRole(data.role || "")
-              setStatus("ready")
-            })
-            .catch(() => {
-              setStatus("error")
-              handleLogout()
-            })
-        } else {
-          setStatus("error")
-          handleLogout()
-        }
+      .catch(() => {
+        setStatus("error")
+        handleLogout()
       })
   }, [navigate])
 
   const now = new Date()
   const loginTime = now.toLocaleTimeString("tr-TR", { hour: "2-digit", minute: "2-digit" })
   const roleLabel = ROLE_LABELS[role] || role
+  const isAdmin = role.toUpperCase() === "ADMIN"
 
   return (
     <div
       className="relative min-h-screen overflow-hidden text-white"
-      style={{ background: "linear-gradient(160deg, #17324A 0%, #1E3A5F 45%, #2A4A6B 100%)" }}
+      style={{ background: "linear-gradient(160deg, #060B12 0%, #0B1C2E 45%, #13293F 100%)" }}
     >
+      {/* Glow Effects */}
       <div
-        className="pointer-events-none fixed -left-32 bottom-0 w-[460px] h-[460px] rounded-full opacity-[0.12] blur-3xl"
+        className="pointer-events-none fixed -left-32 bottom-0 w-[460px] h-[460px] rounded-full opacity-[0.10] blur-3xl"
         style={{
-          background:
-            "radial-gradient(circle, rgba(147,197,253,0.65) 0%, rgba(255,255,255,0.12) 40%, transparent 68%)",
+          background: "radial-gradient(circle, rgba(147,197,253,0.5) 0%, rgba(255,255,255,0.08) 40%, transparent 68%)",
         }}
       />
       <div
-        className="pointer-events-none fixed -right-32 -top-40 w-[560px] h-[560px] rounded-full opacity-25 blur-3xl"
-        style={{ background: "radial-gradient(circle, rgba(147,197,253,0.5) 0%, transparent 70%)" }}
+        className="pointer-events-none fixed -right-32 -top-40 w-[560px] h-[560px] rounded-full opacity-[0.16] blur-3xl"
+        style={{ background: "radial-gradient(circle, rgba(147,197,253,0.4) 0%, transparent 70%)" }}
       />
 
       <DashboardHeader username={username} status={status} onLogout={handleLogout} />
 
-      {/* HERO */}
-      <motion.section
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.45 }}
-        className="relative max-w-5xl mx-auto px-6 py-10 md:py-12 flex flex-col md:flex-row md:items-end md:justify-between gap-8"
-      >
-        <div>
-          <h1 className="font-sans text-[28px] md:text-[36px] font-semibold tracking-[-0.02em] text-white">
-            {status === "loading"
-              ? "Yükleniyor..."
-              : status === "error"
-              ? "Oturum doğrulanamadı"
-              : `Hoş geldin, ${username}`}
-          </h1>
-          <p className="mt-4 font-sans text-[14px] text-white/55">
-            Panele erişiminiz doğrulandı, aşağıdaki modülleri kullanabilirsiniz.
-          </p>
-        </div>
+      <div className="relative flex">
+        <DashboardSidebar
+          activeTab={activeTab}
+          onSelectModule={(tabKey) => setActiveTab(tabKey)}
+          onSelectGame={() => navigate("/game")}
+          status={status}
+          isAdmin={isAdmin}
+        />
 
-        {status === "ready" && (
-          <div className="relative flex gap-8 border-t md:border-t-0 md:border-l border-white/25 pt-5 md:pt-0 md:pl-8">
-            <div>
-              <div className="text-[11px] uppercase tracking-wide text-white/40">Rol</div>
-              <div className="mt-1.5 flex items-center gap-1.5 text-[15px] font-medium text-white">
-                <Shield className="w-3.5 h-3.5 text-white/60" />
-                {roleLabel}
-              </div>
-            </div>
-            <div>
-              <div className="text-[11px] uppercase tracking-wide text-white/40">Son giriş</div>
-              <div className="mt-1.5 flex items-center gap-1.5 text-[15px] font-medium text-white">
-                <Clock className="w-3.5 h-3.5 text-white/60" />
-                Bugün, {loginTime}
-              </div>
-            </div>
-          </div>
-        )}
-      </motion.section>
+        {/* ANA İÇERİK ALANI */}
+        <main className="flex-1 min-w-0 px-8 py-8 md:py-10">
+          <div className="max-w-5xl space-y-8">
 
-      {/* CONTENT */}
-      <main className="relative max-w-5xl mx-auto px-6 pb-16">
-        <section>
-          <div className="flex items-end justify-between gap-4">
-            <div>
-              <div className="h-px w-28 bg-[#D9A441] mb-6" />
-              <h2 className="font-sans text-[21px] font-semibold text-white">Modüller</h2>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mt-6">
-            {MODULES.map((mod, i) => (
-              <ModuleCard
-                key={mod.key}
-                mod={mod}
-                isOpen={expandedModule === mod.key}
-                onClick={() => toggleModule(mod)}
-                delay={0.1 + i * 0.08}
-              />
-            ))}
-          </div>
-
-          <LogsPanel isOpen={expandedModule === "loglar"} />
-          <RolesPanel isOpen={expandedModule === "roller"} />
-          <UsersPanel isOpen={expandedModule === "kullanicilar"} />
-        </section>
-
-        {/* MINI GAME CTA */}
-        <section className="mt-10">
-          <div className="h-px w-28 bg-[#D9A441] mb-6" />
-
-          <motion.div
-            initial={{ opacity: 0, y: 14 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, delay: 0.3 }}
-            onClick={() => navigate("/game")}
-            className="group relative cursor-pointer overflow-hidden rounded-2xl border border-[#D9A441]/40 p-6 md:p-7 shadow-[0_20px_50px_-28px_rgba(4,15,30,0.65)] transition-all hover:-translate-y-1 hover:shadow-[0_28px_65px_-30px_rgba(4,15,30,0.75)] flex flex-col md:flex-row md:items-center md:justify-between gap-5"
-            style={{ background: "linear-gradient(120deg, #17324A 0%, #1E3A5F 55%, #23456B 100%)" }}
-          >
-            <div
-              className="pointer-events-none absolute -right-20 -top-24 w-72 h-72 rounded-full opacity-20 blur-3xl"
-              style={{ background: "radial-gradient(circle, rgba(217,164,65,0.7) 0%, transparent 70%)" }}
-            />
-
-            <div className="relative flex items-center gap-4">
-              <div className="w-12 h-12 shrink-0 rounded-xl flex items-center justify-center bg-[#D9A441]/15 text-[#D9A441] border border-[#D9A441]/40 transition-colors group-hover:bg-[#D9A441] group-hover:text-[#17324A]">
-                <Gamepad2 className="w-6 h-6" />
-              </div>
+            {/* HOŞ GELDİN HEADER (Tüm sekmelerde sabit kalır) */}
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.45 }}
+              className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-2 border-b border-white/10"
+            >
               <div>
-                <span className="inline-flex items-center rounded-full bg-[#D9A441]/15 px-2.5 py-0.5 font-sans text-[10.5px] font-semibold tracking-wide uppercase text-[#D9A441] border border-[#D9A441]/40 mb-2">
-                  Yeni
-                </span>
-                <h3 className="font-sans text-[17px] font-semibold text-white">Smart Spirit Mini Game</h3>
-
+                <h1
+                  className="text-3xl md:text-4xl font-semibold tracking-tight text-white"
+                  style={{ fontFamily: "'Space Grotesk', ui-sans-serif, system-ui, sans-serif" }}
+                >
+                  {status === "loading" ? (
+                    "Yükleniyor..."
+                  ) : status === "error" ? (
+                    "Oturum doğrulanamadı"
+                  ) : (
+                    <>
+                      Hoş geldin,{" "}
+                      <span className="bg-gradient-to-r from-[#F4D27A] to-[#D9A441] bg-clip-text text-transparent">
+                        {username}
+                      </span>
+                    </>
+                  )}
+                </h1>
               </div>
-            </div>
 
-            <span className="relative shrink-0 inline-flex items-center gap-2 rounded-xl bg-[#D9A441] px-5 py-2.5 font-sans text-[13.5px] font-semibold text-[#17324A] transition-all group-hover:gap-3 self-start md:self-center">
-              Oyna
-              <ArrowRight className="w-4 h-4" />
-            </span>
-          </motion.div>
-        </section>
-      </main>
+              {status === "ready" && (
+                <div className="flex items-center gap-6">
+                  <div>
+                    <div className="text-[11px] uppercase tracking-wider text-white/40 font-medium">Rol</div>
+                    <div className="mt-1 flex items-center gap-1.5 text-sm font-medium text-white">
+                      <Shield className="w-4 h-4 text-emerald-400" />
+                      {roleLabel}
+                    </div>
+                  </div>
+                  <div>
+                    <div className="text-[11px] uppercase tracking-wider text-white/40 font-medium">Son Giriş</div>
+                    <div className="mt-1 flex items-center gap-1.5 text-sm font-medium text-white">
+                      <Clock className="w-4 h-4 text-white/60" />
+                      Bugün, {loginTime}
+                    </div>
+                  </div>
+                </div>
+              )}
+            </motion.div>
+
+           {/* DİNAMİK İÇERİK ALANI: HERO DASHBOARD */}
+           {activeTab === "dashboard" && (
+             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
+               <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-r from-[#0E1A29] via-[#0B1624] to-[#08111C] p-8 md:p-10 shadow-2xl">
+                 {/* Arka Plan Glow Efektleri */}
+                 <div className="pointer-events-none absolute -top-20 -right-20 h-80 w-80 rounded-full bg-[#D9A441]/10 blur-[100px]" />
+                 <div className="pointer-events-none absolute bottom-0 right-1/4 h-64 w-64 rounded-full bg-blue-500/5 blur-[80px]" />
+
+                 <div className="relative z-10 flex flex-col justify-between gap-6">
+                   <div>
+                     <div className="inline-flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3.5 py-1">
+                       <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
+                       <span className="text-xs font-medium text-emerald-300">Sistem Aktif</span>
+                     </div>
+                   </div>
+
+                   {/* Dinamik Başlık ve Metin (Tam genişlik) */}
+                   <div className="max-w-3xl space-y-3">
+                     <h2 className="text-2xl md:text-3xl font-bold tracking-tight text-white">
+                       Smart Spirit AI Yönetim Paneli
+                     </h2>
+                     <p className="text-sm md:text-base text-white/60 leading-relaxed">
+                       {isAdmin
+                         ? <>Yönetici yetkisiyle oturum açtınız.
+                         <br/>
+                         Sol menü üzerinden kullanıcıları yönetebilir, rol tanımlamaları yapabilir ve sistem loglarını izleyebilirsiniz.
+                         </>
+                         : "Sistem modüllerine ve erişebildiğiniz servislere sol taraftaki menüyü kullanarak anında ulaşabilirsiniz."
+                       }
+                     </p>
+                   </div>
+
+                   {/* Alt Aksiyon Alanı */}
+                   <div className="pt-2 flex items-center gap-4">
+                     <button
+                       onClick={() => navigate("/game")}
+                       className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-[#F4D27A] to-[#D9A441] px-5 py-2.5 text-xs font-semibold uppercase tracking-wider text-slate-950 transition-all hover:opacity-90 active:scale-95 shadow-lg shadow-[#D9A441]/10"
+                     >
+                       <span>Mini Game'e Git</span>
+                     </button>
+
+                     <span className="text-xs text-white/40 border-l border-white/10 pl-4 py-1">
+                     </span>
+                   </div>
+                 </div>
+               </div>
+             </motion.div>
+           )}
+
+            {activeTab === "users" && (
+              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
+                <UsersPanel currentUsername={username} />
+              </motion.div>
+            )}
+
+            {activeTab === "roles" && (
+              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
+                <RolesPanel />
+              </motion.div>
+            )}
+
+            {activeTab === "logs" && (
+              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
+                <LogsPanel />
+              </motion.div>
+            )}
+
+          </div>
+        </main>
+      </div>
     </div>
   )
 }

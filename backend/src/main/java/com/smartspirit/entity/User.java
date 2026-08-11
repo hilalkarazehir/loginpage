@@ -42,5 +42,7 @@ public class User {
     private LocalDateTime createdDate = LocalDateTime.now();
 
     private LocalDateTime updatedDate;
+    @Column(nullable = false, columnDefinition = "integer default 0")
+    private Integer tokenVersion = 0;
 
 }

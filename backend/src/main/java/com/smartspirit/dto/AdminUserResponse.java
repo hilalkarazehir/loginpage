@@ -11,5 +11,10 @@ public class AdminUserResponse {
     private String username;
     private String fullName;
     private String role;
+    private Long roleId;
+    private String firstName;
+    private String lastName;
+    private String email;
+    private String phoneNumber;
 
 }

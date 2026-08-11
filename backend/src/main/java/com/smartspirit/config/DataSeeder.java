@@ -4,12 +4,19 @@ import com.smartspirit.entity.Role;
 import com.smartspirit.entity.User;
 import com.smartspirit.repository.UserRepository;
 import com.smartspirit.repository.RoleRepository;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 @Component
 public class DataSeeder implements CommandLineRunner {
+
+    @Value("${admin.email}")
+    private String adminEmail;
+
+    @Value("${admin.password}")
+    private String adminPassword;
 
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
@@ -32,9 +39,10 @@ public class DataSeeder implements CommandLineRunner {
         if (userRepository.findByUsername("admin").isEmpty()) {
             User admin = new User();
             admin.setUsername("admin");
-            admin.setPassword(passwordEncoder.encode("Admin1234"));
+            admin.setPassword(passwordEncoder.encode(adminPassword));
             admin.setFirstName("Admin");
             admin.setLastName("Kullanıcı");
+            admin.setEmail(adminEmail);
             admin.setRole(adminRole);
             userRepository.save(admin);
         }

@@ -3,12 +3,15 @@ package com.smartspirit.controller;
 import com.smartspirit.config.SecurityConfig;
 import com.smartspirit.entity.Role;
 import com.smartspirit.entity.User;
+import com.smartspirit.repository.RoleRepository;
+import com.smartspirit.repository.UserLogRepository;
 import com.smartspirit.repository.UserRepository;
 import com.smartspirit.repository.SystemErrorRepository;
 import com.smartspirit.security.ForbiddenHandler;
 import com.smartspirit.security.JwtFilter;
 import com.smartspirit.security.UnauthorizedHandler;
 import com.smartspirit.util.JwtUtil;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -37,6 +40,15 @@ class AdminUserControllerTest {
 
     @MockBean
     private SystemErrorRepository systemErrorRepository;
+
+    @MockBean
+    private RoleRepository roleRepository;
+
+    @MockBean
+    private PasswordEncoder passwordEncoder;
+
+    @MockBean
+    private UserLogRepository userLogRepository;
 
     @Test
     void adminTokenIleKullaniciListesiDoner() throws Exception {

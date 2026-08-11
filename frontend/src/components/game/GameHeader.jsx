@@ -1,69 +1,59 @@
-import { ArrowLeft, Heart, HelpCircle, Pause, Play } from "lucide-react"
-import { START_LIVES } from "../../lib/gameConstants"
+import { memo } from "react"
+import { ArrowLeft, HelpCircle, Pause, Play, Gamepad2 } from "lucide-react"
 
-export default function GameHeader({ targetColor, combo, speedLevel, score, lives, onBack, onHelp, isPaused, onTogglePause }) {
+function GameHeader({ onBack, onHelp, isPaused, onTogglePause }) {
   return (
-    <header className="sticky top-0 z-20 border-b border-white/10 bg-[#1E3A5F]/85 backdrop-blur-xl">
-      <div className="max-w-5xl mx-auto px-6 h-16 flex items-center justify-between">
-        <button
-          onClick={onBack}
-          className="inline-flex items-center gap-2 rounded-xl border border-white/15 bg-white/5 px-4 py-2 text-[13.5px] font-medium text-white transition-all hover:border-white/30 hover:bg-white/10 active:scale-[0.98]"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          Panele dön
-        </button>
+    <div className="relative flex items-center justify-between border-b border-white/10 px-4 sm:px-6 h-16 overflow-hidden">
+      <div
+        className="pointer-events-none absolute inset-x-0 -top-16 h-32 opacity-30 blur-2xl"
+        style={{
+          background: "radial-gradient(45% 100% at 50% 100%, #D9A441 0%, transparent 65%)",
+        }}
+      />
 
-        <span className="font-sans text-[15px] font-semibold tracking-[0.08em] text-white uppercase">
-          Smart Spirit Mini Game
+      <button
+        onClick={onBack}
+        className="relative inline-flex items-center gap-2 rounded-xl border border-[#D9A441]/30 bg-gradient-to-b from-white/[0.06] to-white/[0.02] px-4 py-2 text-[13.5px] font-medium text-white transition-all hover:border-[#D9A441]/60 hover:bg-white/10 hover:shadow-[0_0_16px_-2px_rgba(217,164,65,0.5)] active:scale-[0.98]"
+      >
+        <ArrowLeft className="w-4 h-4 text-[#D9A441]" />
+        Panele dön
+      </button>
+
+      {/* title */}
+      <div className="relative flex items-center gap-2.5">
+        <Gamepad2 className="w-4 h-4 text-[#D9A441] shrink-0" strokeWidth={2.4} />
+        <span className="font-sans text-[14px] sm:text-[16px] font-bold tracking-[0.14em] uppercase text-white/95">
+          Smart Spirit
+          <span className="text-[#D9A441]"> Mini Game</span>
         </span>
-
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2 text-sm">
-            <span className="text-white/60">Hedef:</span>
-            <span className="relative inline-flex items-center justify-center w-5 h-5">
-              <span
-                className="absolute inline-block w-5 h-5 rounded-full animate-ping opacity-40"
-                style={{ backgroundColor: targetColor }}
-              />
-              <span
-                className="relative inline-block w-4 h-4 rounded-full border border-white/40"
-                style={{ backgroundColor: targetColor }}
-              />
-            </span>
-          </div>
-          {combo > 1 && (
-            <span className="text-sm font-bold text-[#68D391] animate-pulse">x{combo} kombo</span>
-          )}
-          {speedLevel > 1 && (
-            <span className="text-sm font-semibold text-[#F6AD55]">Hız ×{speedLevel.toFixed(1)}</span>
-          )}
-          <span className="text-sm font-semibold text-[#D9A441]">Skor: {score}</span>
-          <div className="flex items-center gap-1">
-            {Array.from({ length: START_LIVES }).map((_, i) => (
-              <Heart
-                key={i}
-                className="w-4 h-4"
-                fill={i < lives ? "#F56565" : "none"}
-                stroke={i < lives ? "#F56565" : "rgba(255,255,255,0.3)"}
-              />
-            ))}
-          </div>
-          <button
-            onClick={onTogglePause}
-            aria-label={isPaused ? "Devam et" : "Duraklat"}
-            className="shrink-0 inline-flex items-center justify-center w-8 h-8 rounded-full border border-white/15 bg-white/5 text-white/80 transition-all hover:border-white/30 hover:bg-white/10 hover:text-white active:scale-[0.95]"
-          >
-            {isPaused ? <Play className="w-4 h-4 shrink-0" /> : <Pause className="w-4 h-4 shrink-0" />}
-          </button>
-          <button
-            onClick={onHelp}
-            aria-label="Nasıl oynanır"
-            className="shrink-0 inline-flex items-center justify-center w-8 h-8 rounded-full border border-white/15 bg-white/5 text-white/80 transition-all hover:border-white/30 hover:bg-white/10 hover:text-white active:scale-[0.95]"
-          >
-            <HelpCircle className="w-4 h-4 shrink-0" />
-          </button>
-        </div>
+        <span className="hidden sm:block w-[6px] h-[6px] rounded-full bg-[#D9A441] shadow-[0_0_10px_3px_rgba(217,164,65,0.7)]" />
       </div>
-    </header>
+
+      <div className="relative flex items-center gap-2.5">
+        <button
+          onClick={onTogglePause}
+          aria-label={isPaused ? "Devam et" : "Duraklat"}
+          className="shrink-0 inline-flex items-center justify-center w-9 h-9 rounded-full border border-[#D9A441]/50 text-[#D9A441] transition-all hover:text-[#17324A] hover:bg-[#D9A441] hover:scale-105 active:scale-95"
+          style={{
+            background: "linear-gradient(135deg, rgba(217,164,65,0.15), rgba(217,164,65,0.05))",
+            animation: "glow-pulse 2.6s ease-in-out infinite",
+          }}
+        >
+          {isPaused ? <Play className="w-4 h-4 shrink-0" /> : <Pause className="w-4 h-4 shrink-0" />}
+        </button>
+        <button
+          onClick={onHelp}
+          aria-label="Nasıl oynanır"
+          className="shrink-0 inline-flex items-center justify-center w-9 h-9 rounded-full border border-[#22D3EE]/50 text-[#22D3EE] transition-all hover:text-[#0B2530] hover:bg-[#22D3EE] hover:scale-105 active:scale-95"
+          style={{
+            background: "linear-gradient(135deg, rgba(34,211,238,0.15), rgba(34,211,238,0.05))",
+          }}
+        >
+          <HelpCircle className="w-4 h-4 shrink-0" />
+        </button>
+      </div>
+    </div>
   )
 }
+
+export default memo(GameHeader)

@@ -1,13 +1,15 @@
-export async function saveGameScore(finalScore) {
+import { authFetch } from "../lib/apiClient"
+
+export async function saveGameScore(finalScore, stats = {}) {
   try {
-    const token = localStorage.getItem("token")
-    const res = await fetch(`${import.meta.env.VITE_API_URL}/api/game/results`, {
+    const res = await authFetch("/api/game/results", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({ score: finalScore }),
+      body: JSON.stringify({
+        score: finalScore,
+        correctCatches: stats.correctCatches,
+        maxCombo: stats.maxCombo,
+        durationSeconds: stats.durationSeconds,
+      }),
     })
     if (!res.ok) throw new Error("save-failed")
     return await res.json()
@@ -18,10 +20,7 @@ export async function saveGameScore(finalScore) {
 }
 
 export async function fetchLeaderboard() {
-  const token = localStorage.getItem("token")
-  const res = await fetch(`${import.meta.env.VITE_API_URL}/api/game/results/leaderboard`, {
-    headers: { Authorization: `Bearer ${token}` },
-  })
+  const res = await authFetch("/api/game/results/leaderboard")
   if (!res.ok) throw new Error("leaderboard-fetch-failed")
   return res.json()
 }

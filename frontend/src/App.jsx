@@ -3,7 +3,7 @@ import LoginPages from "./pages/LoginPages"
 import Dashboard from "./pages/Dashboard"
 import MiniGamePage from "./pages/MiniGamePage"
 import "./App.css"
-
+import ResetPassword from "./pages/ResetPassword"
 function App() {
   return (
     <BrowserRouter>
@@ -11,6 +11,7 @@ function App() {
         <Route path="/" element={<LoginPages />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/game" element={<MiniGamePage />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
       </Routes>
     </BrowserRouter>
   )

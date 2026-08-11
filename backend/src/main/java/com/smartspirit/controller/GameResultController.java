@@ -20,6 +20,8 @@ import java.util.Map;
 @RequestMapping("/api/game/results")
 public class GameResultController {
 
+    private static final int BASE_POINTS = 10;
+
     private final GameResultRepository gameResultRepository;
     private final UserRepository userRepository;
 
@@ -34,6 +36,12 @@ public class GameResultController {
         User user = userRepository.findByUsername(authentication.getName())
                 .orElseThrow(() -> new RuntimeException("Kullanıcı bulunamadı"));
 
+        if (!isPlausible(request)) {
+            return ResponseEntity.badRequest().body(Map.of(
+                    "success", false,
+                    "message", "Gönderilen skor, oyun istatistikleriyle tutarlı değil."
+            ));
+        }
         Integer previousBest = gameResultRepository.findMaxScoreByUser(user).orElse(null);
         boolean isNewRecord = previousBest == null || request.getScore() > previousBest;
 
@@ -52,10 +60,23 @@ public class GameResultController {
                 "previousBest", previousBest == null ? 0 : previousBest
         ));
     }
-
     @GetMapping("/leaderboard")
     public ResponseEntity<List<LeaderboardEntryResponse>> getLeaderboard() {
         List<LeaderboardEntryResponse> leaderboard = gameResultRepository.findLeaderboard(PageRequest.of(0, 10));
         return ResponseEntity.ok(leaderboard);
+    }
+    private boolean isPlausible(GameResultRequest request) {
+        Integer score = request.getScore();
+        Integer correctCatches = request.getCorrectCatches();
+        Integer maxCombo = request.getMaxCombo();
+
+        if (correctCatches == null || maxCombo == null) {
+            return true;
+        }
+        if (score == null || score <= 0) {
+            return true;
+        }
+        long upperBound = (long) correctCatches * BASE_POINTS * Math.max(maxCombo, 1);
+        return score <= upperBound;
     }
 }

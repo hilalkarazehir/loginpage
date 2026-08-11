@@ -22,21 +22,23 @@ public class JwtUtil {
         this.refreshExpirationMs = refreshExpirationMs;
     }
 
-    public String generateToken(String username, String role) {
+    public String generateToken(String username, String role, Integer tokenVersion) {
         return Jwts.builder()
                 .setSubject(username)
                 .claim("role", role)
                 .claim("type", "access")
+                .claim("tv", tokenVersion)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + expirationMs))
                 .signWith(key)
                 .compact();
     }
 
-    public String generateRefreshToken(String username) {
+    public String generateRefreshToken(String username, Integer tokenVersion) {
         return Jwts.builder()
                 .setSubject(username)
                 .claim("type", "refresh")
+                .claim("tv", tokenVersion)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + refreshExpirationMs))
                 .signWith(key)
@@ -84,6 +86,15 @@ public class JwtUtil {
         try {
             return Jwts.parserBuilder().setSigningKey(key).build()
                     .parseClaimsJws(token).getBody().get("role", String.class);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public Integer extractTokenVersion(String token) {
+        try {
+            return Jwts.parserBuilder().setSigningKey(key).build()
+                    .parseClaimsJws(token).getBody().get("tv", Integer.class);
         } catch (Exception e) {
             return null;
         }

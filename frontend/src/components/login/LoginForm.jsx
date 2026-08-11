@@ -18,6 +18,11 @@ export default function LoginForm({ initialUsername = "", initialRememberMe = fa
   const [apiError, setApiError] = useState("")
   const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
+const [forgotOpen, setForgotOpen] = useState(false)
+const [forgotEmail, setForgotEmail] = useState("")
+const [forgotLoading, setForgotLoading] = useState(false)
+const [forgotMessage, setForgotMessage] = useState("")
+const [forgotError, setForgotError] = useState("")
 
   const handleLogin = async (e) => {
     e.preventDefault()
@@ -83,12 +88,142 @@ setLoading(true)
       setLoading(false)
     }
   }
+const handleForgotPassword = async (e) => {
+  e.preventDefault()
 
+  setForgotMessage("")
+  setForgotError("")
+
+  if (!forgotEmail.trim()) {
+    setForgotError("E-posta adresi boş bırakılamaz.")
+    return
+  }
+
+  if (!forgotEmail.includes("@")) {
+    setForgotError("Geçerli bir e-posta adresi giriniz.")
+    return
+  }
+
+  setForgotLoading(true)
+
+  try {
+    const response = await fetch(
+      `${import.meta.env.VITE_API_URL}/api/auth/forgot-password`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: forgotEmail,
+        }),
+      }
+    )
+
+    const data = await response.json()
+
+    if (data.success) {
+      setForgotMessage(
+        "Eğer bu e-posta adresi sistemde kayıtlıysa, şifre sıfırlama bağlantısı gönderildi."
+      )
+    } else {
+      setForgotError(
+        data.message || "Şifre sıfırlama işlemi gerçekleştirilemedi."
+      )
+    }
+  } catch {
+    setForgotError("Sunucuya bağlanılamadı.")
+  } finally {
+    setForgotLoading(false)
+  }
+}
   return (
     <div
       className="flex-1 flex flex-col items-center justify-center p-10 md:p-14 bg-white"
       style={{ animation: "fade-up 0.55s ease-out both" }}
     >
+    {forgotOpen && (
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm px-4">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95, y: 10 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          className="w-full max-w-md rounded-2xl bg-white p-7 shadow-2xl"
+        >
+          <div className="mb-6">
+            <h2 className="text-xl font-semibold text-[#1E3A5F]">
+              Şifre Sıfırlama
+            </h2>
+
+            <p className="mt-2 text-sm leading-6 text-[#6B7280]">
+              Hesabınıza ait e-posta adresini girin. Şifre sıfırlama
+              bağlantısını e-posta adresinize göndereceğiz.
+            </p>
+          </div>
+
+          <form onSubmit={handleForgotPassword} className="space-y-4">
+
+            <div className="space-y-2">
+              <Label
+                htmlFor="forgotEmail"
+                className="text-sm font-medium text-[#1F2937]"
+              >
+                E-posta adresi
+              </Label>
+
+              <input
+                id="forgotEmail"
+                type="email"
+                value={forgotEmail}
+                onChange={(e) => {
+                  setForgotEmail(e.target.value)
+                  setForgotError("")
+                  setForgotMessage("")
+                }}
+                placeholder="ornek@mail.com"
+                className="w-full h-12 rounded-xl border border-[#DDE3EA] bg-[#F8FAFC] px-4 text-sm outline-none transition-all focus:border-[#1E3A5F] focus:ring-4 focus:ring-[#1E3A5F]/10"
+              />
+            </div>
+
+            {forgotError && (
+              <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">
+                {forgotError}
+              </div>
+            )}
+
+            {forgotMessage && (
+              <div className="rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm leading-5 text-green-700">
+                {forgotMessage}
+              </div>
+            )}
+
+            <div className="flex gap-3 pt-2">
+
+              <button
+                type="button"
+                onClick={() => {
+                  setForgotOpen(false)
+                  setForgotEmail("")
+                  setForgotError("")
+                  setForgotMessage("")
+                }}
+                className="flex-1 h-12 rounded-xl border border-[#DDE3EA] text-sm font-medium text-[#6B7280] hover:bg-[#F8FAFC] transition-colors"
+              >
+                Vazgeç
+              </button>
+
+              <button
+                type="submit"
+                disabled={forgotLoading}
+                className="flex-1 h-12 rounded-xl bg-[#1E3A5F] text-sm font-semibold text-white hover:bg-[#16304D] disabled:opacity-60 transition-colors"
+              >
+                {forgotLoading ? "Gönderiliyor..." : "Bağlantı Gönder"}
+              </button>
+
+            </div>
+          </form>
+        </motion.div>
+      </div>
+    )}
       <div className="w-full max-w-[380px]">
         <div className="mb-8">
           <div className="font-sans text-[22px] font-semibold tracking-[0.04em] text-[#1E3A5F] mb-2 ">
@@ -241,9 +376,11 @@ setLoading(true)
 
             <button
               type="button"
-              onClick={() =>
-                setApiError("Şifre sıfırlama bağlantısı için sistem yöneticinizle iletişime geçin.")
-              }
+              onClick={() => {
+                setForgotOpen(true)
+                setForgotMessage("")
+                setForgotError("")
+              }}
               className="text-[13.5px] font-medium text-[#1E3A5F] hover:text-[#16304D] transition-colors"
             >
               Şifremi unuttum

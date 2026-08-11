@@ -6,7 +6,10 @@ export default function LoginLeftPanel() {
   return (
     <div
       className="hidden md:flex w-[42%] p-11 flex-col justify-between relative overflow-hidden"
-      style={{ background: "#1E3A5F" }}
+      style={{
+        background:
+          "linear-gradient(145deg, #101B2D 0%, #16263C 45%, #20344F 100%)",
+      }}
     >
       <motion.div
         className="absolute -inset-y-40 -inset-x-40 pointer-events-none blur-md"
@@ -26,7 +29,7 @@ export default function LoginLeftPanel() {
         className="absolute -left-24 top-8 w-[360px] h-[360px] rounded-full opacity-25 blur-3xl"
         style={{
           background:
-            "radial-gradient(circle, rgba(147,197,253,0.55) 0%, rgba(255,255,255,0.12) 38%, transparent 68%)",
+            "radial-gradient(circle, rgba(88,130,193,.30) 0%, rgba(255,255,255,0.12) 38%, transparent 68%)",
         }}
         animate={{
           scale: [1, 1.15, 1],
@@ -60,7 +63,7 @@ export default function LoginLeftPanel() {
         {/* Sol üst */}
         <motion.line
           x1="55" y1="0" x2="165" y2="130"
-          stroke="#D9A441"
+          stroke="#C69B4E"
           strokeWidth="2"
           strokeLinecap="round"
           opacity="0.9"
@@ -94,7 +97,7 @@ export default function LoginLeftPanel() {
         {/* Sağ alt */}
         <motion.line
           x1="305" y1="540" x2="195" y2="410"
-          stroke="#D9A441"
+          stroke="#C69B4E"
           strokeWidth="2"
           strokeLinecap="round"
           opacity="0.9"

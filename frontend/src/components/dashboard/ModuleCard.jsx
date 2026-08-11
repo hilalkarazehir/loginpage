@@ -1,33 +1,157 @@
 import { motion } from "motion/react"
 import { ChevronDown } from "lucide-react"
 
-export default function ModuleCard({ mod, isOpen, onClick, delay = 0 }) {
+export default function ModuleCard({
+  mod,
+  isOpen,
+  onClick,
+  delay = 0,
+}) {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 14 }}
+      initial={{ opacity: 0, y: 18 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4, delay }}
+      transition={{ duration: .45, delay }}
+      whileHover={{ y: -6 }}
       onClick={onClick}
-      className={`group cursor-pointer rounded-2xl border border-[#DDE3EA] bg-white p-6 shadow-[0_20px_50px_-28px_rgba(4,15,30,0.65)] transition-all hover:-translate-y-1 hover:shadow-[0_28px_65px_-30px_rgba(4,15,30,0.75)] ${
-        isOpen ? "ring-2 ring-[#1E3A5F]/30" : ""
-      }`}
+      className={`
+        group
+        relative
+        overflow-hidden
+        cursor-pointer
+        rounded-3xl
+        border
+        border-[#D9A441]/20
+        bg-[#101F31]/90
+        backdrop-blur-md
+        p-6
+        shadow-[0_20px_60px_-28px_rgba(0,0,0,.45)]
+        transition-all
+        ${isOpen ? "ring-2 ring-[#D9A441]/35" : ""}
+      `}
     >
-      <div className="w-11 h-11 rounded-xl flex items-center justify-center mb-5 bg-[#EEF3F8] text-[#1E3A5F] border border-[#DDE6F0] border-b-2 border-b-[#D9A441]/50 transition-colors group-hover:bg-[#1E3A5F] group-hover:text-white group-hover:border-b-[#D9A441]">
-        <mod.icon className="w-5 h-5" />
+
+      {/* Glow */}
+      <div
+        className="
+        absolute
+        -right-20
+        -top-20
+        w-52
+        h-52
+        rounded-full
+        blur-3xl
+        opacity-0
+        transition-opacity
+        duration-500
+        group-hover:opacity-100
+        "
+        style={{
+          background:
+            "radial-gradient(circle,#D9A44155 0%,transparent 70%)",
+        }}
+      />
+
+
+      {/* Icon */}
+      <div
+        className="
+        relative
+        z-10
+        w-14
+        h-14
+        rounded-2xl
+        flex
+        items-center
+        justify-center
+        border
+        border-[#D9A441]/30
+        transition-all
+        duration-300
+        group-hover:scale-105
+        group-hover:border-[#D9A441]
+        "
+        style={{
+          background:
+            "linear-gradient(180deg,#315276,#1E3653)",
+        }}
+      >
+        <mod.icon
+          className="
+          w-6
+          h-6
+          text-[#D9A441]
+          transition-all
+          group-hover:rotate-6
+          "
+        />
       </div>
 
-      <h3 className="font-sans text-[16px] font-semibold text-[#111827]">{mod.title}</h3>
+      {/* Title */}
 
-      <p className="font-sans text-[13.5px] text-[#6B7280] mt-2 leading-relaxed">{mod.description}</p>
+      <h3 className="relative z-10 mt-6 text-white text-lg font-semibold">
+        {mod.title}
+      </h3>
 
-      <div className="mt-5 flex items-center justify-between border-t border-[#EEF2F6] pt-4">
-        <span className="inline-flex items-center rounded-full bg-[#1E3A5F]/10 px-2.5 py-1 font-sans text-[11px] font-semibold tracking-wide uppercase text-[#1E3A5F] border border-[#D9A441]/40">
+      {/* Description */}
+
+      <p className="relative z-10 mt-3 text-[14px] leading-6 text-white/65">
+        {mod.description}
+      </p>
+
+      {/* Divider */}
+
+      <div className="relative z-10 mt-8 border-t border-white/10 pt-5 flex items-center justify-between">
+
+        <span
+          className="
+          rounded-full
+          border
+          border-[#D9A441]/35
+          bg-[#D9A441]/10
+          px-3
+          py-1.5
+          text-[11px]
+          uppercase
+          tracking-wider
+          font-semibold
+          text-[#F4D27A]
+          "
+        >
           Görüntüle
         </span>
 
-        <span className="w-8 h-8 rounded-lg bg-[#F8FAFC] border border-[#E5EAF0] flex items-center justify-center text-[#1E3A5F]/40 transition-colors group-hover:bg-[#1E3A5F] group-hover:text-white">
-          <ChevronDown className={`w-4 h-4 transition-transform ${isOpen ? "rotate-180" : ""}`} />
-        </span>
+        <div
+          className="
+          w-10
+          h-10
+          rounded-xl
+          border
+          border-white/10
+          bg-white/5
+          flex
+          items-center
+          justify-center
+          transition-all
+          duration-300
+          group-hover:bg-[#D9A441]
+          "
+        >
+          <ChevronDown
+            className={`
+              w-5
+              h-5
+              transition-all
+              duration-300
+              ${
+                isOpen
+                  ? "rotate-180 text-[#17324A]"
+                  : "text-white group-hover:text-[#17324A]"
+              }
+            `}
+          />
+        </div>
+
       </div>
     </motion.div>
   )
