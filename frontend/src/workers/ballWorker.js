@@ -46,10 +46,11 @@ class GameEngine {
     this.lastTime = 0
     this.rafId = null
   }
+  //Ana threade genel mesaj gönderme
   post(type, payload) {
     self.postMessage({ type, payload })
   }
-
+//UI'da skor can vs güncelleme
   sendHud() {
     this.post("hud", { score: this.score, lives: this.lives, combo: this.combo, maxCombo: this.maxCombo })
   }
@@ -57,10 +58,11 @@ class GameEngine {
   playSound(name, extra) {
     this.post("sound", { name, ...extra })
   }
+
   addPopup(x, y, text, color) {
     this.popups.push({ x, y, text, color, life: 1 })
   }
-
+//Top yakalandığında etrafa ışık/parçacık saçar
   spawnBurst(x, y, color, count = 8, speedRange = [2, 4.5]) {
     for (let i = 0; i < count; i++) {
       const angle = (Math.PI * 2 * i) / count + Math.random() * 0.6
@@ -100,7 +102,7 @@ class GameEngine {
     }
     return gradient
   }
-
+//Tuzak topun görünümü
   drawTrapAura(ball) {
     const ctx = this.ctx
     const time = Date.now() / 1000
@@ -130,7 +132,7 @@ class GameEngine {
 
     ctx.restore()
   }
-
+//Topu ekrana çizer
   drawBall(ball) {
     const ctx = this.ctx
     const isTarget = ball.color === this.targetColor
@@ -238,7 +240,7 @@ class GameEngine {
 
     ctx.restore()
   }
-
+//Top raketle yakalandığında çalışır
   async handleCatch(ball) {
     const caughtColor = ball.color
     let points = 0
@@ -282,7 +284,7 @@ class GameEngine {
 
     this.sendHud()
   }
-
+//Hedef top kaçırıldığında
   async handleMiss(ball) {
     const wasTarget = ball.color === this.targetColor
 
@@ -334,7 +336,7 @@ class GameEngine {
     })
   }
 
-  // ---- Ana döngü ----
+  // ---- Ana döngü ----(her karede çağrılır(60 fps))
 
   async loop(currentTime) {
     if (!this.isRunning || this.isPaused || this.isGameOver) return
@@ -349,6 +351,7 @@ class GameEngine {
     if (this.keys.right) this.paddle.x += PADDLE_SPEED
     this.paddle.x = clamp(this.paddle.x, 0, this.canvasWidth - this.paddle.width)
 
+//Fizik hesabı (yan threade (worker) gönderilir
     const stepResults = await this.threadManager.computePhysics({
       balls: this.balls,
       paddle: this.paddle,
@@ -566,6 +569,5 @@ class GameEngine {
     }
   }
 }
-
 const engine = new GameEngine()
 self.onmessage = (e) => engine.handleMessage(e.data)

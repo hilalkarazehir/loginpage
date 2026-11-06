@@ -1,5 +1,3 @@
-// Web Audio API ile anlik ton uretimi - disaridan ses dosyasi gerektirmez.
-// Tarayicilarin autoplay politikasi geregi AudioContext ilk kullanici etkilesiminde olusturulur.
 
 let ctx = null
 

@@ -10,6 +10,7 @@ import {
   ShieldPlus,
   ShieldCheck,
   ShieldMinus,
+  KeyRound,
 } from "lucide-react"
 
 const STATIC_ACTION_META = {
@@ -28,11 +29,11 @@ const STATIC_ACTION_META = {
     icon: ShieldAlert,
     className: "bg-red-500/10 text-red-300 border-red-500/25",
   },
-  LOGIN_FAILED_INACTIVE_ACCOUNT: {
-    label: "Hesap aktif değil",
-    icon: UserX,
-    className: "bg-amber-500/10 text-amber-300 border-amber-500/25",
-  },
+PASSWORD_RESET_REQUESTED: {
+    label:"Şifre değiştirildi",
+    icon: KeyRound,
+    className: "bg-red-500/10 text-red-300 border-red-500/25",
+    },
 }
 const PARAMETERIZED_ACTION_META = {
   USER_CREATED: {
@@ -65,6 +66,7 @@ const PARAMETERIZED_ACTION_META = {
     icon: ShieldMinus,
     className: "bg-red-500/10 text-red-300 border-red-500/25",
   },
+
 }
 const DEFAULT_META = {
   icon: History,

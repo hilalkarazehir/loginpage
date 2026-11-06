@@ -48,6 +48,7 @@ class LoginServiceTest {
         role.setName("ADMIN");
 
         User user = new User();
+        user.setId(1L); // Eğer User sınıfınızda ID varsa ekleyin
         user.setUsername("admin");
         user.setPassword("encodedPassword");
         user.setRole(role);
@@ -58,10 +59,13 @@ class LoginServiceTest {
         when(passwordEncoder.matches("123456", "encodedPassword"))
                 .thenReturn(true);
 
-        when(jwtUtil.generateToken("admin", "ADMIN"))
+        // generateToken metodu 3 parametre bekliyor (username, role, userId)
+        // Eğer 3. parametre farkli bir Integer ise (ör. userId yerine anyInt()) koda göre ayarlayabilirsiniz:
+        when(jwtUtil.generateToken(eq("admin"), eq("ADMIN"), anyInt()))
                 .thenReturn("jwt-token");
 
-        when(jwtUtil.generateRefreshToken("admin"))
+        // generateRefreshToken metodunun imzasını da JwtUtil sınıfınıza göre güncelleyin:
+        when(jwtUtil.generateRefreshToken(eq("admin"), any()))
                 .thenReturn("refresh-token");
 
         LoginResponse response = loginService.login(request);
@@ -132,14 +136,23 @@ class LoginServiceTest {
         role.setName("ADMIN");
 
         User user = new User();
+        user.setId(1L);
         user.setUsername("admin");
         user.setRole(role);
 
         when(jwtUtil.isRefreshToken(oldRefreshToken)).thenReturn(true);
         when(jwtUtil.extractUsername(oldRefreshToken)).thenReturn("admin");
         when(userRepository.findByUsername("admin")).thenReturn(Optional.of(user));
-        when(jwtUtil.generateToken("admin", "ADMIN")).thenReturn("new-jwt-token");
-        when(jwtUtil.generateRefreshToken("admin")).thenReturn("new-refresh-token");
+
+        // Bu stub eksikti: LoginService.refreshToken() artik tokenVersion
+        // kontrolu yapiyor (revocation check). Stub'lanmazsa Mockito
+        // extractTokenVersion icin null doner, tokenVersion == null
+        // kosuluna takilip test "Gecersiz veya suresi dolmus refresh token"
+        // mesaji alir ve fail eder.
+        when(jwtUtil.extractTokenVersion(oldRefreshToken)).thenReturn(user.getTokenVersion());
+
+        when(jwtUtil.generateToken(eq("admin"), eq("ADMIN"), anyInt())).thenReturn("new-jwt-token");
+        when(jwtUtil.generateRefreshToken(eq("admin"), any())).thenReturn("new-refresh-token");
 
         LoginResponse response = loginService.refreshToken(oldRefreshToken);
 
@@ -152,7 +165,6 @@ class LoginServiceTest {
         verify(jwtUtil).isRefreshToken(oldRefreshToken);
         verify(userRepository).findByUsername("admin");
     }
-
     @Test
     void shouldRejectInvalidOrExpiredRefreshToken() {
 

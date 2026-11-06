@@ -1,6 +1,6 @@
 import { useCallback, useState } from "react"
 import { useNavigate } from "react-router-dom"
-import { Trophy, Sparkles, Gauge, Crown, ChevronRight } from "lucide-react"
+import { Trophy, Sparkles, Gauge, Crown } from "lucide-react"
 import { useMiniGame } from "../hooks/useMiniGame"
 import { useSpiritMood } from "../hooks/useSpiritMood"
 import GameHeader from "../components/game/GameHeader"
@@ -200,14 +200,6 @@ export default function MiniGamePage() {
                       ))}
                     </ol>
                   )}
-
-                  <button
-                    onClick={refreshLeaderboard}
-                    className="mt-2.5 flex w-full items-center justify-center gap-1 rounded-lg border border-white/10 bg-white/5 py-1.5 text-[11px] font-semibold text-white/70 transition-all hover:border-white/20 hover:bg-white/10 hover:text-white active:scale-[0.98]"
-                  >
-                    Yenile
-                    <ChevronRight className="h-3 w-3" />
-                  </button>
                 </div>
               </div>
             </div>

@@ -1,9 +1,3 @@
-// Fizik hesaplamalarına ayrılmış, tamamen stateless (durumsuz) modüler thread.
-// GameEngine (ballWorker.js) her frame'de top listesini + paddle bilgisini
-// gönderir, bu thread her top için gravity integrasyonu, duvar sekmesi ve
-// paddle çarpışma/kaçırma tespitini yapıp güncellenmiş sonucu döner.
-// Skor/can/kombo gibi oyun kuralları burada YOK — bunlar GameEngine'de kalır.
-
 const MAX_VY = 11
 const AIR_RESISTANCE = 0.998
 

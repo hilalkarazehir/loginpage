@@ -1,144 +1,125 @@
-
+/* Karakter Konteyneri */
 .spirit-figure {
   position: relative;
-  width: 8.5rem;
-  height: 8.5rem;
-  display: inline-flex;
-  align-items: flex-end;
+  width: 5.5rem;
+  height: 5.5rem;
+  display: flex;
+  align-items: center;
   justify-content: center;
-  overflow: visible;
+  overflow: visible !important;
+  /* Robotu yukarı kaldırarak çenenin alttaki panele gömülmesini engelliyoruz */
+  transform: translateY(-28px);
+  z-index: 10;
 }
 
 .spirit-figure--sm {
-  width: 5.5rem;
-  height: 5.5rem;
+  width: 4rem;
+  height: 4rem;
+  transform: translateY(-20px);
 }
 
 .spirit-figure--md {
-  width: 8.5rem;
-  height: 8.5rem;
+  width: 5.5rem;
+  height: 5.5rem;
+  transform: translateY(-28px);
 }
 
 .spirit-figure--lg {
-  width: 11rem;
-  height: 11rem;
+  width: 7.5rem;
+  height: 7.5rem;
+  transform: translateY(-36px);
 }
 
 .spirit-images-container {
   position: relative;
   width: 100%;
   height: 100%;
-  transform-origin: bottom center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: visible !important;
 }
 
 .spirit-layer {
   position: absolute;
-  bottom: 0;
-  left: 0;
+  inset: 0;
   width: 100%;
   height: 100%;
   object-fit: contain;
-  object-position: bottom center;
+  object-position: center;
   pointer-events: none;
-  will-change: opacity, transform;
+  will-change: opacity, transform, filter;
 }
 
-/* 1. ODAKLI: */
-@keyframes thinkingBreath {
+/* ==========================================
+   GÜVENLİ SÜZÜLME (FLOATING) ANİMASYONLARI
+   ========================================== */
+
+/* 1. ODAKLI (Yumuşak Süzülme + Mavi Glow) */
+@keyframes spiritFloat {
+  0%, 100% {
+    transform: translateY(0);
+    filter: drop-shadow(0 0 6px rgba(56, 189, 248, 0.4));
+  }
+  50% {
+    transform: translateY(-5px);
+    filter: drop-shadow(0 0 14px rgba(56, 189, 248, 0.8));
+  }
+}
+.spirit-odakli .spirit-images-container {
+  animation: spiritFloat 3s ease-in-out infinite;
+}
+
+/* 2. MUTLU (Hafif Neşeli Zıplama + Sarı Glow) */
+@keyframes spiritGlowPulse {
+  0%, 100% {
+    transform: translateY(0) scale(1);
+    filter: drop-shadow(0 0 6px rgba(234, 179, 8, 0.3));
+  }
+  50% {
+    transform: translateY(-6px) scale(1.02);
+    filter: drop-shadow(0 0 16px rgba(234, 179, 8, 0.8));
+  }
+}
+.spirit-mutlu .spirit-images-container {
+  animation: spiritGlowPulse 1.6s ease-in-out infinite;
+}
+
+/* 3. ÜZGÜN (Aşağı Boyun Bükme) */
+@keyframes spiritSorrow {
   0%, 100% {
     transform: translateY(0) rotate(0deg);
   }
   50% {
-    transform: translateY(-3px) rotate(1.5deg);
+    transform: translateY(3px) rotate(-2deg);
   }
 }
-.spirit-odakli .spirit-images-container {
-  animation: thinkingBreath 3.5s ease-in-out infinite;
-}
-
-/* 2. MUTLU: */
-@keyframes naturalBouncyHop {
-  0%, 100% {
-    transform: translateY(0) scale(1, 1);
-  }
-  30% {
-    transform: translateY(0) scale(1.04, 0.96);
-  }
-  60% {
-    transform: translateY(-6px) scale(0.97, 1.03);
-  }
-}
-.spirit-mutlu .spirit-images-container {
-  animation: naturalBouncyHop 1.2s cubic-bezier(0.25, 1, 0.5, 1) infinite;
-}
-
-/* 3. ÜZGÜN */
 .spirit-uzgun .spirit-images-container {
-  animation: none !important;
-  transform: translateY(-3px) scale(1.08) !important;
-  filter: brightness(0.92);
+  animation: spiritSorrow 2.8s ease-in-out infinite;
+  filter: brightness(0.9) contrast(0.95);
 }
 
-/* 4. YANMIŞ  */
-@keyframes glitchFlicker {
-  0%, 100% { transform: translate(0, 0); }
-  25% { transform: translate(-0.5px, 0.5px); }
-  50% { transform: translate(0.5px, -0.5px); }
-  75% { transform: translate(-0.5px, 0); }
-}
-.spirit-yanmis .spirit-images-container {
-  animation: microGlitch 1.2s ease-in-out infinite;
-  filter: grayscale(0.5) contrast(1.1);
-}
-
-/* 5. TEBRİK */
-@keyframes celebrateDance {
-  0%, 100% { transform: translateY(0) rotate(0deg); }
-  50% { transform: translateY(-5px) rotate(3deg); }
+/* 4. TEBRİK (Kutlama Nefesi + Turuncu Glow) */
+@keyframes spiritCelebrate {
+  0%, 100% {
+    transform: translateY(0) scale(1);
+    filter: drop-shadow(0 0 8px rgba(245, 158, 11, 0.4));
+  }
+  50% {
+    transform: translateY(-7px) scale(1.03);
+    filter: drop-shadow(0 0 20px rgba(245, 158, 11, 0.9));
+  }
 }
 .spirit-tebrik .spirit-images-container {
-  animation: celebrateDance 1s ease-in-out infinite;
-}
-.spirit-particles {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  z-index: 10;
+  animation: spiritCelebrate 1.2s ease-in-out infinite;
 }
 
-/* Akan Gözyaşı */
-@keyframes tearStream {
-  0% { transform: translateY(0); opacity: 0; }
-  30% { opacity: 1; }
-  100% { transform: translateY(22px); opacity: 0; }
+/* 5. YANMIŞ / OYUN BİTTİ (Hafif Titreme) */
+@keyframes spiritDeactivate {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(2px); }
 }
-.spirit-tears .tear {
-  position: absolute;
-  top: 45%;
-  width: 4px;
-  height: 8px;
-  background: #63b3ed;
-  border-radius: 3px;
-  animation: tearStream 1.2s ease-in infinite;
+.spirit-yanmis .spirit-images-container {
+  animation: spiritDeactivate 2s ease-in-out infinite;
+  filter: grayscale(0.2) contrast(1.05);
 }
-.spirit-tears .tear-left { left: 36%; animation-delay: 0s; }
-.spirit-tears .tear-right { right: 36%; animation-delay: 0.4s; }
-
-/* Duman Efekti (Yanmış Modu) */
-@keyframes smokeRise {
-  0% { transform: translateY(0) scale(0.5); opacity: 0; }
-  50% { opacity: 0.5; }
-  100% { transform: translateY(-25px) scale(1.2); opacity: 0; }
-}
-.spirit-smoke .smoke-puff {
-  position: absolute;
-  top: 15%;
-  width: 12px;
-  height: 12px;
-  background: rgba(220, 220, 220, 0.4);
-  border-radius: 50%;
-  filter: blur(3px);
-  animation: smokeRise 1.6s ease-out infinite;
-}
-.spirit-smoke .smoke-1 { left: 32%; animation-delay: 0s; }
-.spirit-smoke .smoke-2 { right: 32%; animation-delay: 0.5s; }

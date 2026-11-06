@@ -42,7 +42,11 @@ public class User {
     private LocalDateTime createdDate = LocalDateTime.now();
 
     private LocalDateTime updatedDate;
+
     @Column(nullable = false, columnDefinition = "integer default 0")
     private Integer tokenVersion = 0;
+
+    @Column(name = "is_active", nullable = false, columnDefinition = "boolean default true")
+    private Boolean active = true;
 
 }

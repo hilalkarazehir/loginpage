@@ -65,7 +65,7 @@ export function useMiniGame(navigate) {
   const targetTimeoutRef = useRef(null)
   const difficultyRef = useRef(1)
   const difficultyIntervalRef = useRef(null)
-  const pendingTerminateRef = useRef(null) // StrictMode çift-mount koruması için
+  const pendingTerminateRef = useRef(null)
 
   useEffect(() => {
     const isLoggedIn = localStorage.getItem("isLoggedIn")

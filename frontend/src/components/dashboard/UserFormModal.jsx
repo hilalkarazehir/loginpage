@@ -1,9 +1,13 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import { createPortal } from "react-dom"
 import { X, UserPlus, Pencil } from "lucide-react"
 import { authFetch } from "@/lib/apiClient"
 
 export default function UserFormModal({ open, user, roles, onClose, onSaved }) {
   const isEdit = Boolean(user)
+
+  const PASSWORD_RULE = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,15}$/
+  const PASSWORD_HINT = "8-15 karakter, en az bir büyük harf, bir küçük harf ve bir rakam içermeli."
 
   const [form, setForm] = useState(() => ({
     username: user?.username || "",
@@ -29,6 +33,14 @@ export default function UserFormModal({ open, user, roles, onClose, onSaved }) {
 
     if (!isEdit && (!form.username.trim() || !form.password.trim())) {
       setError("Kullanıcı adı ve şifre zorunludur.")
+      return
+    }
+    if (!isEdit && !PASSWORD_RULE.test(form.password)) {
+      setError("Şifre kurallara uymuyor, aşağıdaki kuralı kontrol et.")
+      return
+    }
+    if (isEdit && form.password.trim() && !PASSWORD_RULE.test(form.password)) {
+      setError("Şifre kurallara uymuyor, aşağıdaki kuralı kontrol et.")
       return
     }
     if (!form.roleId) {
@@ -79,7 +91,7 @@ export default function UserFormModal({ open, user, roles, onClose, onSaved }) {
     }
   }
 
-  return (
+  return createPortal(
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
 
@@ -131,6 +143,7 @@ export default function UserFormModal({ open, user, roles, onClose, onSaved }) {
               className="w-full rounded-lg border border-white/15 bg-white/5 px-3 py-2 text-[13px] text-white placeholder-white/30 focus:outline-none focus:border-[#D9A441]/50"
               placeholder={isEdit ? "Boş bırakılırsa değişmez" : "En az 6 karakter"}
             />
+            <p className="mt-1 text-[11px] text-white/35">{PASSWORD_HINT}</p>
           </div>
 
           <div className="grid grid-cols-2 gap-3">
@@ -208,6 +221,7 @@ export default function UserFormModal({ open, user, roles, onClose, onSaved }) {
           </div>
         </form>
       </div>
-    </div>
+    </div>,
+    document.body
   )
 }

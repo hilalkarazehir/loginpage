@@ -40,7 +40,6 @@ export function useSpiritMood({
     }
   }, [combo])
 
-  // Unmount temizliği
   useEffect(() => {
     return () => {
       if (holdTimeoutRef.current) clearTimeout(holdTimeoutRef.current)

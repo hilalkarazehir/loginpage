@@ -1,16 +1,18 @@
+import { memo } from "react"
+import { createPortal } from "react-dom"
 import { Play, Pause } from "lucide-react"
 import { motion } from "framer-motion"
 
 export default function PauseOverlay({ onResume }) {
   const accentColor = "#D9A441"
 
-  return (
+  return createPortal(
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.25 }}
-      className="absolute inset-0 z-40 flex flex-col items-center justify-center gap-6 rounded-3xl bg-slate-950/75 backdrop-blur-md px-6 overflow-hidden"
+      className="fixed inset-0 z-[9999] flex flex-col items-center justify-center gap-6 bg-slate-950/75 backdrop-blur-md px-6 overflow-hidden"
     >
       <motion.div
         initial={{ scale: 0.95, opacity: 0, y: 10 }}
@@ -66,6 +68,7 @@ export default function PauseOverlay({ onResume }) {
           Devam Et
         </button>
       </motion.div>
-    </motion.div>
+    </motion.div>,
+    document.body
   )
 }

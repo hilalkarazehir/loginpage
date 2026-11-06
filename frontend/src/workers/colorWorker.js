@@ -1,4 +1,3 @@
-
 import { randomColor, pickTarget } from "../lib/gameConstants"
 
 self.onmessage = (e) => {

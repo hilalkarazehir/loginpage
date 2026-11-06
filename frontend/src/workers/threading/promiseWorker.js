@@ -1,7 +1,4 @@
-// Ham bir Worker'ı Promise tabanlı bir API'ye çeviren wrapper.
-// Her istek benzersiz bir id ile gönderilir; worker aynı id ile cevap verdiğinde
-// ilgili Promise resolve/reject edilir. Böylece worker ile haberleşme,
-// postMessage/onmessage yerine normal async/await ile yönetilebilir.
+
 let requestIdCounter = 0
 
 export class PromiseWorker {
@@ -26,8 +23,6 @@ export class PromiseWorker {
     }
   }
 
-  // Worker'ın kendisi çökerse (syntax hatası, yakalanmamış exception vs.)
-  // bekleyen tüm isteklerin askıda kalmaması için hepsini reddet.
   _handleFatalError(error) {
     for (const pending of this._pending.values()) {
       pending.reject(error)
@@ -35,7 +30,6 @@ export class PromiseWorker {
     this._pending.clear()
   }
 
-  // type + payload'ı worker'a gönderir, cevabı bir Promise olarak döner.
   run(type, payload, transfer = []) {
     const id = ++requestIdCounter
 
@@ -45,8 +39,6 @@ export class PromiseWorker {
     })
   }
 
-  // Şu an bu worker'da bekleyen (cevaplanmamış) istek sayısı.
-  // WorkerPool bunu "en boş worker'ı seç" zamanlaması için kullanır.
   get pendingCount() {
     return this._pending.size
   }
